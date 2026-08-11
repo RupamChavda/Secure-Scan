@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - SECRET_KEY=production-secure-scan-key-2026
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    restart: always

@@ -1,0 +1,38 @@
+{
+  "admin": {
+    "id": "usr-001",
+    "username": "admin",
+    "email": "admin@securescan.ai",
+    "password_hash": "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9",
+    "role": "Admin",
+    "full_name": "Chief Security Officer",
+    "created_at": "2026-01-01T00:00:00Z"
+  },
+  "user": {
+    "id": "usr-002",
+    "username": "user",
+    "email": "user@securescan.ai",
+    "password_hash": "e606e38b0d8c19b24cf0ee3808183162ea7cd63ff7912dbb22b5e803286b4446",
+    "role": "Security Analyst",
+    "full_name": "Security Analyst",
+    "created_at": "2026-01-15T00:00:00Z"
+  },
+  "alex": {
+    "id": "usr-003",
+    "username": "alex",
+    "email": "alex@company.com",
+    "password_hash": "d9508122cd143d69df229bf3624b7bcb2b8ac81ed210a0c926455ef119c12abd",
+    "role": "Security Analyst",
+    "full_name": "Alex Mercer (User 1)",
+    "created_at": "2026-02-01T00:00:00Z"
+  },
+  "john": {
+    "id": "usr-004",
+    "username": "john",
+    "email": "john@company.com",
+    "password_hash": "b4b597c714a8f49103da4dab0266af0ee0ae4f8575250a84855c3d76941cd422",
+    "role": "Security Analyst",
+    "full_name": "John Doe (User 2)",
+    "created_at": "2026-02-01T00:00:00Z"
+  }
+}

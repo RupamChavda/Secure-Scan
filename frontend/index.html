@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureScan AI - Enterprise Security & Vulnerability Platform</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Login Screen -->
+    <div class="login-screen" id="login-screen">
+        <div class="auth-split-wrapper">
+            <!-- Left Hero Showcase Panel -->
+            <div class="auth-hero-panel">
+                <div class="hero-brand">
+                    <div class="hero-brand-icon">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span class="hero-icon-pulse"></span>
+                    </div>
+                    <div>
+                        <h1 class="hero-brand-title">SecureScan <span class="badge-ai">AI</span></h1>
+                        <p class="hero-brand-subtitle">Enterprise Vulnerability & Risk Management Engine</p>
+                    </div>
+                </div>
+
+                <div class="hero-features-list">
+                    <div class="hero-feature-item">
+                        <div class="feature-icon cyan"><i class="fa-solid fa-radar"></i></div>
+                        <div>
+                            <strong>Live Dynamic Audits</strong>
+                            <span>Real-time HTTP response header, TLS certificate & TCP port scanning.</span>
+                        </div>
+                    </div>
+                    <div class="hero-feature-item">
+                        <div class="feature-icon purple"><i class="fa-solid fa-folder-code"></i></div>
+                        <div>
+                            <strong>SAST & Secrets Engine</strong>
+                            <span>Static code analysis for API tokens, AWS keys & vulnerable packages.</span>
+                        </div>
+                    </div>
+                    <div class="hero-feature-item">
+                        <div class="feature-icon amber"><i class="fa-solid fa-brain"></i></div>
+                        <div>
+                            <strong>AI Remediation Copilot</strong>
+                            <span>Plain-language risk explanation, patch prioritization & fix code snippets.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hero-status-pill">
+                    <span class="status-pulse-dot"></span>
+                    <span>256-Bit Encrypted Security Session &bull; Active</span>
+                </div>
+            </div>
+
+            <!-- Right Interactive Auth Card Panel -->
+            <div class="auth-card-panel">
+                <div class="auth-header">
+                    <h2 id="auth-heading-title">Welcome Back</h2>
+                    <p id="auth-heading-sub" class="subtitle">Sign in to access your security console & scan pipeline.</p>
+                </div>
+
+                <div class="auth-segment-control">
+                    <button type="button" class="auth-segment-btn active" id="tab-login-btn" onclick="toggleAuthTab('login')">
+                        <i class="fa-solid fa-key"></i> Sign In
+                    </button>
+                    <button type="button" class="auth-segment-btn" id="tab-signup-btn" onclick="toggleAuthTab('signup')">
+                        <i class="fa-solid fa-user-plus"></i> Create Account
+                    </button>
+                </div>
+
+                <!-- Sign In Form -->
+                <form id="login-form">
+                    <div class="form-group">
+                        <label class="form-label"><i class="fa-solid fa-user-shield"></i> Username or Email</label>
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-user input-icon"></i>
+                            <input type="text" id="login-username" class="form-control padded-icon" placeholder="admin or user" required autocomplete="username">
+                        </div>
+                    </div>
+                    <div class="form-group" style="position: relative;">
+                        <label class="form-label"><i class="fa-solid fa-lock"></i> Account Password</label>
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-key input-icon"></i>
+                            <input type="password" id="login-password" class="form-control padded-icon" placeholder="••••••••" required autocomplete="current-password">
+                        </div>
+                        <button type="button" class="btn-toggle-password" onclick="togglePasswordVisibility()" title="Toggle password visibility">
+                            <i class="fa-solid fa-eye" id="password-eye-icon"></i>
+                        </button>
+                    </div>
+                    <div id="login-error" class="login-error" style="display:none;"></div>
+                    <button type="submit" class="btn btn-primary btn-lg" style="width:100%; margin-top:8px;" id="login-submit-btn">
+                        <i class="fa-solid fa-right-to-bracket"></i> Sign In to Security Console
+                    </button>
+                </form>
+
+                <!-- Create Account (Sign Up) Form -->
+                <form id="signup-form" style="display:none;">
+                    <div class="form-group">
+                        <label class="form-label"><i class="fa-solid fa-id-card"></i> Full Name</label>
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-user-tag input-icon"></i>
+                            <input type="text" id="signup-fullname" class="form-control padded-icon" placeholder="e.g. Alex Mercer" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"><i class="fa-solid fa-user"></i> Username</label>
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-at input-icon"></i>
+                            <input type="text" id="signup-username" class="form-control padded-icon" placeholder="e.g. alex_mercer" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"><i class="fa-solid fa-envelope"></i> Email Address</label>
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-envelope-open input-icon"></i>
+                            <input type="email" id="signup-email" class="form-control padded-icon" placeholder="alex@company.com" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"><i class="fa-solid fa-lock"></i> Password</label>
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-shield-keyhole input-icon"></i>
+                            <input type="password" id="signup-password" class="form-control padded-icon" placeholder="••••••••" required oninput="checkPasswordStrength(this.value)">
+                        </div>
+                        <div class="password-strength-wrap">
+                            <div class="password-strength-fill" id="pass-strength-fill"></div>
+                        </div>
+                    </div>
+                    <div id="signup-error" class="login-error" style="display:none;"></div>
+                    <button type="submit" class="btn btn-primary btn-lg" style="width:100%; margin-top:8px;" id="signup-submit-btn">
+                        <i class="fa-solid fa-user-plus"></i> Create Analyst Profile & Sign In
+                    </button>
+                </form>
+
+                <div class="login-role-select">
+                    <span class="login-role-label"><i class="fa-solid fa-bolt text-amber"></i> 1-Click Quick Demo Sign-In:</span>
+                    <button type="button" class="role-chip" data-user="alex" data-pass="alex123"><i class="fa-solid fa-user-check text-cyan"></i> User 1 (alex / alex123)</button>
+                    <button type="button" class="role-chip" data-user="john" data-pass="john123"><i class="fa-solid fa-user-shield text-purple"></i> User 2 (john / john123)</button>
+                </div>
+
+                <div class="login-hint">
+                    <i class="fa-solid fa-circle-info"></i>
+                    Quick Demo Credentials &mdash; User 1: <code>alex / alex123</code> &nbsp;|&nbsp; User 2: <code>john / john123</code>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Main Layout -->
+    <div class="app-layout" id="app-layout" style="display:none;">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <i class="fa-solid fa-shield-halved brand-icon"></i>
+                <div class="brand-text">
+                    <span class="brand-name">SecureScan <span class="badge-ai">AI</span></span>
+                    <span class="brand-sub">SecOps Intelligence</span>
+                </div>
+            </div>
+
+            <nav class="nav-menu">
+                <div class="nav-section-title">PROJECT MANAGEMENT</div>
+                <button class="nav-item active" data-tab="dashboard">
+                    <i class="fa-solid fa-folder-tree text-cyan"></i> Projects Hub
+                    <span class="kbd-badge">Alt+1</span>
+                </button>
+                <button class="nav-item" data-tab="assets">
+                    <i class="fa-solid fa-server"></i> Asset Inventory
+                    <span class="kbd-badge">Alt+2</span>
+                </button>
+
+                <div class="nav-section-title">AUDIT ENGINES</div>
+                <button class="nav-item" data-tab="new-scan">
+                    <i class="fa-solid fa-square-plus text-amber"></i> New Project Launcher
+                    <span class="kbd-badge">Alt+3</span>
+                </button>
+                <button class="nav-item" data-tab="project-scanner">
+                    <i class="fa-solid fa-folder-code text-purple"></i> Code & SAST Audit
+                    <span class="kbd-badge">Alt+4</span>
+                </button>
+
+                <div class="nav-section-title">THREAT INTELLIGENCE</div>
+                <button class="nav-item" data-tab="cve-db">
+                    <i class="fa-solid fa-database"></i> CVE Knowledgebase
+                    <span class="kbd-badge">Alt+5</span>
+                </button>
+                <button class="nav-item" data-tab="ai-assistant">
+                    <i class="fa-solid fa-brain"></i> AI Copilot Assistant
+                    <span class="kbd-badge">Alt+6</span>
+                </button>
+
+                <div class="nav-section-title">REPORTS</div>
+                <button class="nav-item" data-tab="reports">
+                    <i class="fa-solid fa-file-contract"></i> Audit Reports
+                    <span class="kbd-badge">Alt+7</span>
+                </button>
+            </nav>
+
+            <div class="user-profile-widget">
+                <div class="user-avatar" id="user-avatar-icon"><i class="fa-solid fa-user"></i></div>
+                <div class="user-info">
+                    <div class="user-name" id="display-user-name">Security User</div>
+                    <div class="user-role" id="display-user-role"><span class="user-status-pill"><i class="fa-solid fa-circle text-emerald"></i> Active Profile</span></div>
+                </div>
+                <button class="btn-logout" id="btn-logout" title="Log out of session"><i class="fa-solid fa-right-from-bracket"></i></button>
+            </div>
+        </aside>
+
+        <!-- Main Content Viewport -->
+        <main class="content-viewport">
+            <!-- Top Navbar -->
+            <header class="topbar">
+                <div class="topbar-left">
+                    <div class="global-search-wrapper">
+                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                        <input type="text" id="global-search-input" class="global-search-input" placeholder="Quick search assets, CVEs, or scans... (Ctrl + K)">
+                        <span class="search-kbd-hint">Ctrl K</span>
+                    </div>
+                </div>
+                
+                <div class="topbar-right">
+                    <div class="status-indicator">
+                        <span class="pulse-dot"></span>
+                        <span class="status-text">Engine: <strong style="color: #10b981;">ACTIVE</strong></span>
+                    </div>
+                    <div class="active-scans-badge" title="Active background scanning pipeline">
+                        <i class="fa-solid fa-circle-nodes"></i> Ready
+                    </div>
+                    <div class="top-actions">
+                        <button class="btn btn-primary" id="btn-header-new-scan"><i class="fa-solid fa-plus"></i> New Scan Target</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="view-container">
+                <!-- 1. Projects Hub View -->
+                <section class="tab-view active" id="view-dashboard">
+                    <div class="page-header-flex">
+                        <div class="page-header">
+                            <h2>My Security Projects & Audits</h2>
+                            <p class="subtitle">Select an existing project card below to view its last scan status, findings, and launch a live rescan.</p>
+                        </div>
+                        <div class="quick-action-pills">
+                            <button class="btn btn-primary" onclick="switchTab('new-scan')"><i class="fa-solid fa-plus-circle"></i> Create New Project Scan</button>
+                        </div>
+                    </div>
+
+                    <!-- Projects Grid Section -->
+                    <div class="projects-section-header">
+                        <h3><i class="fa-solid fa-folder-tree text-cyan"></i> Scanned Projects Inventory</h3>
+                        <span class="projects-count-pill" id="projects-count-badge">0 Projects</span>
+                    </div>
+
+                    <div class="projects-cards-grid" id="projects-cards-grid">
+                        <!-- Interactive project cards dynamically rendered by app.js -->
+                    </div>
+
+                    <!-- Stats Overview Grid -->
+                    <div class="stats-grid" style="margin-top: 30px;">
+                        <div class="stat-card glass-panel border-cyan">
+                            <div class="stat-icon cyan"><i class="fa-solid fa-radar"></i></div>
+                            <div class="stat-details">
+                                <span class="stat-label">Total Scans Executed</span>
+                                <div class="stat-value-row">
+                                    <span class="stat-value" id="stat-total-scans">0</span>
+                                    <span class="stat-trend trend-up"><i class="fa-solid fa-arrow-trend-up"></i> Live</span>
+                                </div>
+                                <div class="stat-progress-bar"><div class="stat-progress-fill cyan-fill" style="width: 75%;"></div></div>
+                            </div>
+                        </div>
+                        <div class="stat-card glass-panel border-rose">
+                            <div class="stat-icon rose"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                            <div class="stat-details">
+                                <span class="stat-label">Critical Vulnerabilities</span>
+                                <div class="stat-value-row">
+                                    <span class="stat-value" id="stat-critical-vulns">0</span>
+                                    <span class="stat-trend trend-down"><i class="fa-solid fa-shield-heart"></i> Action Req</span>
+                                </div>
+                                <div class="stat-progress-bar"><div class="stat-progress-fill rose-fill" style="width: 40%;"></div></div>
+                            </div>
+                        </div>
+                        <div class="stat-card glass-panel border-amber">
+                            <div class="stat-icon amber"><i class="fa-solid fa-bug"></i></div>
+                            <div class="stat-details">
+                                <span class="stat-label">High / Medium Risks</span>
+                                <div class="stat-value-row">
+                                    <span class="stat-value" id="stat-high-vulns">0</span>
+                                    <span class="stat-trend trend-neutral"><i class="fa-solid fa-circle-exclamation"></i> Tracked</span>
+                                </div>
+                                <div class="stat-progress-bar"><div class="stat-progress-fill amber-fill" style="width: 60%;"></div></div>
+                            </div>
+                        </div>
+                        <div class="stat-card glass-panel border-purple">
+                            <div class="stat-icon purple"><i class="fa-solid fa-shield-virus"></i></div>
+                            <div class="stat-details">
+                                <span class="stat-label">Avg Threat Score</span>
+                                <div class="stat-value-row">
+                                    <span class="stat-value" id="stat-avg-score">0.0 / 10</span>
+                                    <span class="stat-trend trend-purple"><i class="fa-solid fa-gauge-high"></i> CVSS v3</span>
+                                </div>
+                                <div class="stat-progress-bar"><div class="stat-progress-fill purple-fill" style="width: 85%;"></div></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="charts-row">
+                        <div class="chart-card glass-panel">
+                            <div class="chart-header">
+                                <h3><i class="fa-solid fa-chart-line text-cyan"></i> Vulnerability Trends (Last 30 Days)</h3>
+                                <span class="chart-badge">Live Analytics</span>
+                            </div>
+                            <div class="canvas-container">
+                                <canvas id="trendChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card glass-panel">
+                            <div class="chart-header">
+                                <h3><i class="fa-solid fa-chart-pie text-purple"></i> Severity Breakdown</h3>
+                                <span class="chart-badge">CVSS Distribution</span>
+                            </div>
+                            <div class="canvas-container">
+                                <canvas id="severityChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                        <div class="table-header">
+                            <div>
+                                <h3><i class="fa-solid fa-list-check text-cyan"></i> Live Scan Pipeline</h3>
+                                <p class="table-sub">Live monitoring of your active and historical security assessments.</p>
+                            </div>
+                            <button class="btn btn-sm btn-outline" id="btn-refresh-scans"><i class="fa-solid fa-rotate text-cyan"></i> Refresh Pipeline</button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Target Asset</th>
+                                        <th>Scan Type</th>
+                                        <th>Status</th>
+                                        <th>Progress</th>
+                                        <th>Severity Breakdown</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="scan-pipeline-table">
+                                    <!-- Populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Project Details & Rescan Status View -->
+                <section class="tab-view" id="view-project-details">
+                    <div style="margin-bottom: 20px;">
+                        <button type="button" class="btn btn-sm btn-outline" onclick="switchTab('dashboard')">
+                            <i class="fa-solid fa-arrow-left"></i> Back to Projects Hub
+                        </button>
+                    </div>
+
+                    <div id="project-details-hero-card">
+                        <!-- Rendered dynamically by app.js -->
+                    </div>
+
+                    <div id="project-remediation-banner" style="margin-top: 20px;"></div>
+
+                    <div class="table-card glass-panel" style="margin-top: 24px;">
+                        <div class="table-header">
+                            <div>
+                                <h3><i class="fa-solid fa-bug text-cyan"></i> Discovered Vulnerabilities & Remediation Instructions</h3>
+                                <p class="table-sub">Detailed breakdown of security findings from the latest audit scan of this target.</p>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Finding Title</th>
+                                        <th>Severity</th>
+                                        <th>CVSS Score</th>
+                                        <th>Remediation Fix Recommendation</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="project-vulns-table-body">
+                                    <!-- Rendered dynamically by app.js -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 2. New Scan View -->
+                <section class="tab-view" id="view-new-scan">
+                    <div class="page-header">
+                        <h2>Launch Target Security Audit</h2>
+                        <p class="subtitle">Select target asset type, scanning parameters, and security modules.</p>
+                    </div>
+
+                    <div class="scan-form-container glass-panel">
+                        <form id="scan-launcher-form">
+                            <!-- Preset Target Quick Buttons -->
+                            <div class="preset-targets-row">
+                                <span class="preset-label"><i class="fa-solid fa-wand-magic-sparkles"></i> Quick Presets:</span>
+                                <button type="button" class="preset-chip" onclick="fillTargetPreset('https://demo.testfire.net', 'Website URL')"><i class="fa-solid fa-globe"></i> Web App Demo</button>
+                                <button type="button" class="preset-chip" onclick="fillTargetPreset('127.0.0.1', 'IP Address')"><i class="fa-solid fa-network-wired"></i> Local Server (127.0.0.1)</button>
+                                <button type="button" class="preset-chip" onclick="fillTargetPreset('vulnerable/example-app', 'GitHub Repository')"><i class="fa-brands fa-github"></i> Sample GitHub Repo</button>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Target Asset Identifier</label>
+                                <div class="input-with-icon">
+                                    <i class="fa-solid fa-crosshairs input-icon"></i>
+                                    <input type="text" id="scan-target-input" class="form-control padded-icon" placeholder="e.g. https://api.target-app.com, 192.168.1.100, or user/repo" required>
+                                </div>
+                                <span class="form-help"><i class="fa-solid fa-circle-info"></i> Enter website URL, IP address, CIDR range, container image, or repository identifier.</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Target Architecture Category</label>
+                                <div class="target-type-grid">
+                                    <label class="type-card active">
+                                        <input type="radio" name="target_type" value="Website URL" checked>
+                                        <div class="type-card-content">
+                                            <i class="fa-solid fa-globe type-icon"></i>
+                                            <div>
+                                                <strong>Website URL</strong>
+                                                <span>HTTP/S & Web App Probe</span>
+                                            </div>
+                                        </div>
+                                    </label>
+                                    <label class="type-card">
+                                        <input type="radio" name="target_type" value="IP Address">
+                                        <div class="type-card-content">
+                                            <i class="fa-solid fa-network-wired type-icon"></i>
+                                            <div>
+                                                <strong>IP / Server</strong>
+                                                <span>Port & Infrastructure Audit</span>
+                                            </div>
+                                        </div>
+                                    </label>
+                                    <label class="type-card">
+                                        <input type="radio" name="target_type" value="GitHub Repository">
+                                        <div class="type-card-content">
+                                            <i class="fa-brands fa-github type-icon"></i>
+                                            <div>
+                                                <strong>Repository SAST</strong>
+                                                <span>Code & Dependency Inspection</span>
+                                            </div>
+                                        </div>
+                                    </label>
+                                    <label class="type-card">
+                                        <input type="radio" name="target_type" value="Docker Container">
+                                        <div class="type-card-content">
+                                            <i class="fa-brands fa-docker type-icon"></i>
+                                            <div>
+                                                <strong>Container Image</strong>
+                                                <span>CVE Image Vulnerability Check</span>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="form-label-row">
+                                    <label class="form-label">Security Scan Profiles (Select Modules)</label>
+                                    <div class="preset-profile-buttons">
+                                        <button type="button" class="btn-xs-preset" onclick="applyScanPreset('all')">Select All</button>
+                                        <button type="button" class="btn-xs-preset" onclick="applyScanPreset('web')">Web & OWASP</button>
+                                        <button type="button" class="btn-xs-preset" onclick="applyScanPreset('code')">Code & SAST</button>
+                                    </div>
+                                </div>
+                                <div class="modules-grid">
+                                    <label class="module-checkbox"><input type="checkbox" name="scan_types" value="Full Vulnerability Scan" checked> <span>Full Threat Assessment</span></label>
+                                    <label class="module-checkbox"><input type="checkbox" name="scan_types" value="OWASP Top 10 Scan" checked> <span>OWASP Top 10 Audit</span></label>
+                                    <label class="module-checkbox"><input type="checkbox" name="scan_types" value="Source Code Security Scan" checked> <span>SAST Code Inspection</span></label>
+                                    <label class="module-checkbox"><input type="checkbox" name="scan_types" value="Dependency Scan" checked> <span>Dependency CVE Audit</span></label>
+                                    <label class="module-checkbox"><input type="checkbox" name="scan_types" value="SSL Scan" checked> <span>TLS/SSL Protocol Check</span></label>
+                                    <label class="module-checkbox"><input type="checkbox" name="scan_types" value="API Security Scan"> <span>REST API Security Check</span></label>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-lg" style="width: 100%; justify-content: center; margin-top: 10px;">
+                                <i class="fa-solid fa-play"></i> Initiate Dynamic Security Assessment
+                            </button>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- 3. Project & SAST Scanner -->
+                <section class="tab-view" id="view-project-scanner">
+                    <div class="page-header">
+                        <h2>Source Code & Dependency Security Audit</h2>
+                        <p class="subtitle">Static Application Security Testing (SAST), hardcoded secrets detection, and dependency package audit.</p>
+                    </div>
+
+                    <div class="glass-panel" style="padding: 32px; max-width: 920px; margin: 0 auto;">
+                        <form id="sast-upload-form" enctype="multipart/form-data">
+                            <div class="sast-drop-zone" id="sast-drop-zone">
+                                <input type="file" id="sast-file-input" name="file" accept=".zip,.rar,.7z,.tar,.gz" style="display: none;">
+                                
+                                <div class="sast-icon-badge">
+                                    <i class="fa-solid fa-cloud-arrow-up text-cyan"></i>
+                                </div>
+                                <h3 style="font-size: 20px; font-weight: 700; margin-top: 14px;">Upload Project Source Code Archive</h3>
+                                <p style="color: #94a3b8; font-size: 13.5px; margin-top: 6px;">Drag & drop your project archive file here, or browse your local files.</p>
+                                
+                                <div class="supported-formats-row" style="margin: 16px 0;">
+                                    <span class="format-tag"><i class="fa-solid fa-file-zipper text-cyan"></i> .ZIP</span>
+                                    <span class="format-tag"><i class="fa-solid fa-file-code text-purple"></i> .TAR.GZ</span>
+                                    <span class="format-tag"><i class="fa-solid fa-box-archive text-amber"></i> .7Z</span>
+                                    <span class="format-tag"><i class="fa-solid fa-file-lines text-rose"></i> .RAR</span>
+                                </div>
+
+                                <div style="display:flex; justify-content:center; gap:12px; margin-top: 12px;">
+                                    <button type="button" class="btn btn-outline" onclick="document.getElementById('sast-file-input').click()">
+                                        <i class="fa-solid fa-folder-open text-cyan"></i> Choose File / Browse Device
+                                    </button>
+                                </div>
+
+                                <!-- Dynamic Selected File Preview Card -->
+                                <div id="sast-file-preview" class="sast-file-preview-card" style="display: none;">
+                                    <div class="preview-info">
+                                        <i class="fa-solid fa-file-zipper preview-icon text-cyan"></i>
+                                        <div>
+                                            <div id="sast-file-name" class="preview-name">filename.zip</div>
+                                            <div id="sast-file-size" class="preview-size">0 MB</div>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="preview-remove-btn" title="Remove selected file" onclick="clearSelectedSastFile()"><i class="fa-solid fa-xmark"></i></button>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary btn-lg" style="margin-top: 24px; min-width: 260px; justify-content: center;" id="btn-submit-sast">
+                                    <i class="fa-solid fa-shield-halved"></i> Initiate SAST Audit & Secret Scan
+                                </button>
+                            </div>
+                        </form>
+                        <div id="upload-status-message" class="upload-status-box" style="margin-top: 20px;"></div>
+                    </div>
+                </section>
+
+                <!-- 4. Asset Management -->
+                <section class="tab-view" id="view-assets">
+                    <div class="page-header-flex">
+                        <div>
+                            <h2>Asset Inventory & Digital Footprint</h2>
+                            <p class="subtitle">Catalog company assets, servers, IP ranges, repositories, and cloud workloads.</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="toggleAddAssetForm()"><i class="fa-solid fa-plus"></i> Register New Asset</button>
+                    </div>
+
+                    <!-- Add Asset Inline Form -->
+                    <div id="add-asset-form-panel" class="glass-panel" style="display:none; padding:24px; margin-bottom:24px;">
+                        <h3 style="margin-top:0; color:#00f2fe; display:flex; align-items:center; gap:8px;"><i class="fa-solid fa-square-plus"></i> Register Infrastructure Asset</h3>
+                        <form id="new-asset-form" style="display:grid; grid-template-columns: 1fr 1fr; gap:18px; margin-top:18px;">
+                            <div>
+                                <label class="form-label">Asset Name</label>
+                                <input type="text" id="asset-name-input" class="form-control" placeholder="e.g. Payment Gateway Web App" required>
+                            </div>
+                            <div>
+                                <label class="form-label">Target Identifier (URL / IP / Repo)</label>
+                                <input type="text" id="asset-target-input" class="form-control" placeholder="e.g. 192.168.1.100 or https://api.corp.com" required>
+                            </div>
+                            <div>
+                                <label class="form-label">Asset Type</label>
+                                <select id="asset-type-select" class="form-control">
+                                    <option value="Website URL">Website URL</option>
+                                    <option value="IP Address">IP Address / Server</option>
+                                    <option value="GitHub Repository">GitHub Repository</option>
+                                    <option value="Docker Container">Docker Container</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="form-label">Owner / Team</label>
+                                <input type="text" id="asset-owner-input" class="form-control" placeholder="e.g. AppSec Team" value="AppSec Team">
+                            </div>
+                            <div style="grid-column: span 2; text-align:right; margin-top:10px;">
+                                <button type="button" class="btn btn-outline" onclick="toggleAddAssetForm()">Cancel</button>
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-save"></i> Save Asset Record</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="table-card glass-panel">
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Asset ID</th>
+                                        <th>Asset Name</th>
+                                        <th>Target Identifier</th>
+                                        <th>Type</th>
+                                        <th>Department</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="assets-table-body">
+                                    <!-- Dynamically loaded from API -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 5. CVE Knowledgebase -->
+                <section class="tab-view" id="view-cve-db">
+                    <div class="page-header-flex">
+                        <div>
+                            <h2>CVE & Vulnerability Catalog</h2>
+                            <p class="subtitle">Query NVD database, CISA Known Exploited Vulnerabilities catalog, and exploit references.</p>
+                        </div>
+                        <button class="btn btn-outline" onclick="toggleAddCveForm()" data-admin-only="true"><i class="fa-solid fa-shield-virus"></i> Add CVE Entry</button>
+                    </div>
+
+                    <!-- Add CVE Form -->
+                    <div id="add-cve-form-panel" class="glass-panel" style="display:none; padding:24px; margin-bottom:24px;">
+                        <h3 style="margin-top:0; color:#00f2fe; display:flex; align-items:center; gap:8px;"><i class="fa-solid fa-plus-circle"></i> Add Custom CVE Record</h3>
+                        <form id="new-cve-form" style="display:grid; grid-template-columns: 1fr 1fr; gap:18px; margin-top:18px;">
+                            <div>
+                                <label class="form-label">CVE ID</label>
+                                <input type="text" id="cve-id-input" class="form-control" placeholder="e.g. CVE-2026-1001" required>
+                            </div>
+                            <div>
+                                <label class="form-label">Vulnerability Title</label>
+                                <input type="text" id="cve-title-input" class="form-control" placeholder="e.g. Remote Code Execution in API Router" required>
+                            </div>
+                            <div>
+                                <label class="form-label">Severity Level</label>
+                                <select id="cve-severity-select" class="form-control">
+                                    <option value="Critical">Critical</option>
+                                    <option value="High">High</option>
+                                    <option value="Medium">Medium</option>
+                                    <option value="Low">Low</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="form-label">CVSS Score (0.0 - 10.0)</label>
+                                <input type="number" step="0.1" id="cve-cvss-input" class="form-control" value="8.5" min="0" max="10">
+                            </div>
+                            <div style="grid-column: span 2;">
+                                <label class="form-label">Threat Summary</label>
+                                <textarea id="cve-summary-input" class="form-control" rows="2" placeholder="Brief description of the vulnerability threat..."></textarea>
+                            </div>
+                            <div style="grid-column: span 2; text-align:right;">
+                                <button type="button" class="btn btn-outline" onclick="toggleAddCveForm()">Cancel</button>
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-save"></i> Save CVE Record</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="search-bar-row">
+                        <div class="input-with-icon" style="flex:1;">
+                            <i class="fa-solid fa-magnifying-glass input-icon"></i>
+                            <input type="text" id="cve-search-input" class="form-control padded-icon" placeholder="Search CVE-ID (e.g. CVE-2024-3094), software name, or threat keyword...">
+                        </div>
+                    </div>
+                    <div class="cve-list-container" id="cve-catalog-list">
+                        <!-- Dynamically loaded from API -->
+                    </div>
+                </section>
+
+                <!-- 6. AI Vulnerability Assistant -->
+                <section class="tab-view" id="view-ai-assistant">
+                    <div class="page-header">
+                        <h2>AI Security Risk Assistant & Copilot</h2>
+                        <p class="subtitle">Plain-language explanation of technical findings, remediation guidance, and interactive fix code snippets.</p>
+                    </div>
+                    
+                    <div class="ai-prompts-container">
+                        <button class="ai-prompt-chip" onclick="sendAiPrompt('How to fix SQL Injection in Python FastAPI?')"><i class="fa-solid fa-lightbulb text-amber"></i> Fix SQL Injection</button>
+                        <button class="ai-prompt-chip" onclick="sendAiPrompt('Explain Log4Shell CVE-2021-44228 in simple terms')"><i class="fa-solid fa-shield-bug text-cyan"></i> Log4Shell Remediation</button>
+                        <button class="ai-prompt-chip" onclick="sendAiPrompt('How to remediate exposed AWS secret tokens in code?')"><i class="fa-solid fa-key text-rose"></i> Exposed API Secrets</button>
+                        <button class="ai-prompt-chip" onclick="sendAiPrompt('Generate a secure Content-Security-Policy header')"><i class="fa-solid fa-globe text-purple"></i> Generate CSP Header</button>
+                    </div>
+
+                    <div class="glass-panel ai-chat-box">
+                        <div class="chat-messages" id="ai-chat-messages">
+                            <div class="chat-msg ai">
+                                <div class="msg-author"><i class="fa-solid fa-robot"></i> SecureScan AI Assistant</div>
+                                <div class="msg-text">Hello! I am your AI Security Copilot. Ask me how to remediate vulnerabilities (Log4j, SQL Injection, XSS, Secret Leaks), generate secure code patches, or analyze risk scores for your assets.</div>
+                            </div>
+                        </div>
+                        <div class="chat-input-row">
+                            <input type="text" id="ai-chat-input" class="form-control" placeholder="Ask AI to explain a vulnerability or suggest remediation steps..." onkeypress="if(event.key==='Enter') handleAIChatSend()">
+                            <button class="btn btn-primary" id="btn-send-ai-chat" onclick="handleAIChatSend()"><i class="fa-solid fa-paper-plane"></i> Send</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 7. Reports View -->
+                <section class="tab-view" id="view-reports">
+                    <div class="page-header">
+                        <h2>Scan History & Audit Reports</h2>
+                        <p class="subtitle">Complete history of every scan ever run, with downloadable non-technical executive summaries and full HTML/PDF audit documentation.</p>
+                    </div>
+                    <div class="table-card glass-panel">
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Report Title</th>
+                                        <th>Target Asset</th>
+                                        <th>Total Vulnerabilities</th>
+                                        <th>Risk Rating</th>
+                                        <th>Actions & Exports</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="reports-table-body">
+                                    <!-- Dynamically loaded -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

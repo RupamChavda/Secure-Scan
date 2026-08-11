@@ -1,0 +1,116 @@
+{
+  "scan-b713b4a5": {
+    "id": "scan-b713b4a5",
+    "target": "https://demo.testfire.net",
+    "target_type": "Website URL",
+    "scan_types": [
+      "Full Vulnerability Scan",
+      "OWASP Top 10 Scan",
+      "Source Code Security Scan",
+      "Dependency Scan",
+      "SSL Scan"
+    ],
+    "status": "Completed",
+    "progress": 100,
+    "start_time": "2026-08-09T17:06:10.989964Z",
+    "end_time": "2026-08-09T17:06:31.706327Z",
+    "duration_seconds": 20,
+    "total_vulnerabilities": 5,
+    "critical_count": 0,
+    "high_count": 0,
+    "medium_count": 0,
+    "low_count": 0,
+    "vulnerabilities": [
+      {
+        "title": "Target Web Service Unreachable",
+        "severity": "Info",
+        "cvss_score": 0.0,
+        "cve_id": "N/A",
+        "owasp_category": "N/A",
+        "mitre_attack": "N/A",
+        "description": "Could not establish an HTTP or HTTPS connection to 'https://demo.testfire.net'.",
+        "evidence": "HTTPSConnectionPool(host='demo.testfire.net', port=443): Max retries exceeded with url: / (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1082)')))",
+        "remediation": "Verify the target URL is correct, publicly reachable, and not blocked by a firewall.",
+        "id": "vuln-scan-b-1",
+        "affected_asset": "https://demo.testfire.net"
+      },
+      {
+        "title": "TLS/SSL Handshake Could Not Be Completed",
+        "severity": "Info",
+        "cvss_score": 0.0,
+        "cve_id": "N/A",
+        "owasp_category": "N/A",
+        "mitre_attack": "N/A",
+        "description": "A TLS connection to demo.testfire.net:443 could not be established, so certificate/protocol checks were skipped.",
+        "evidence": "[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1082)",
+        "remediation": "If this host should serve HTTPS, verify port 443 is open and a valid certificate is installed.",
+        "id": "vuln-scan-b-2",
+        "affected_asset": "https://demo.testfire.net"
+      },
+      {
+        "title": "Open Network Port Discovered: 80/tcp (HTTP)",
+        "severity": "Low",
+        "cvss_score": 3.1,
+        "cve_id": "N/A",
+        "owasp_category": "A05:2021-Security Misconfiguration",
+        "mitre_attack": "T1046 - Network Service Discovery",
+        "description": "Live TCP scan confirms port 80 (HTTP \u2014 Unencrypted web service) is open and accepting connections on demo.testfire.net (65.61.137.117). This is a lower-risk service but should still be reviewed if unexpected.",
+        "evidence": "TCP connect() to 65.61.137.117:80 succeeded (RESULT=0/OPEN).",
+        "remediation": "If HTTP on port 80 does not need to be publicly reachable, restrict it with a firewall/security group to trusted IP ranges only, and ensure strong authentication is enforced.",
+        "id": "vuln-scan-b-3",
+        "affected_asset": "https://demo.testfire.net"
+      },
+      {
+        "title": "Open Network Port Discovered: 443/tcp (HTTPS)",
+        "severity": "Low",
+        "cvss_score": 3.1,
+        "cve_id": "N/A",
+        "owasp_category": "A05:2021-Security Misconfiguration",
+        "mitre_attack": "T1046 - Network Service Discovery",
+        "description": "Live TCP scan confirms port 443 (HTTPS \u2014 Encrypted web service) is open and accepting connections on demo.testfire.net (65.61.137.117). This is a lower-risk service but should still be reviewed if unexpected.",
+        "evidence": "TCP connect() to 65.61.137.117:443 succeeded (RESULT=0/OPEN).",
+        "remediation": "If HTTPS on port 443 does not need to be publicly reachable, restrict it with a firewall/security group to trusted IP ranges only, and ensure strong authentication is enforced.",
+        "id": "vuln-scan-b-4",
+        "affected_asset": "https://demo.testfire.net"
+      },
+      {
+        "title": "Open Network Port Discovered: 8080/tcp (HTTP-Alt)",
+        "severity": "Low",
+        "cvss_score": 3.1,
+        "cve_id": "N/A",
+        "owasp_category": "A05:2021-Security Misconfiguration",
+        "mitre_attack": "T1046 - Network Service Discovery",
+        "description": "Live TCP scan confirms port 8080 (HTTP-Alt \u2014 Alternate / proxy web service) is open and accepting connections on demo.testfire.net (65.61.137.117). This is a lower-risk service but should still be reviewed if unexpected.",
+        "evidence": "TCP connect() to 65.61.137.117:8080 succeeded (RESULT=0/OPEN).",
+        "remediation": "If HTTP-Alt on port 8080 does not need to be publicly reachable, restrict it with a firewall/security group to trusted IP ranges only, and ensure strong authentication is enforced.",
+        "id": "vuln-scan-b-5",
+        "affected_asset": "https://demo.testfire.net"
+      }
+    ],
+    "ai_analysis": {
+      "overall_risk_score": 0.0,
+      "business_impact": "No security issues were identified on 'https://demo.testfire.net' during this scan. Keep up regular scanning to catch new risks early.",
+      "technical_impact": "Findings breakdown for this scan: 0 Critical, 0 High, 0 Medium, 0 Low. Exploitable vectors include network exposure, injection flaws, missing security headers/encryption, or leaked credentials, depending on the specific findings below.",
+      "likelihood": "Minimal \u2014 no exploitable weaknesses were found in this scan.",
+      "recommendations": [
+        "Re-run this scan after applying fixes to confirm the issues are resolved.",
+        "Review the detailed findings below with your technical/IT team for step-by-step fixes."
+      ],
+      "patch_priority": [
+        "No urgent patches required based on current findings."
+      ],
+      "executive_summary": "Automated security audit for 'https://demo.testfire.net' identified 5 total finding(s): 0 Critical, 0 High, 0 Medium, 0 Low. No urgent action is required, but continued monitoring is advised."
+    },
+    "requested_by": "alex",
+    "logs": [
+      "[17:06:10] Scan request queued for target https://demo.testfire.net.",
+      "[17:06:10] Starting SecureScan AI dynamic scan engine...",
+      "[17:06:10] Analyzing target fingerprint: https://demo.testfire.net",
+      "[17:06:11] Running live HTTP security header & configuration analysis...",
+      "[17:06:13] Performing live TLS/SSL certificate & protocol scan...",
+      "[17:06:13] Scanning for exposed network ports...",
+      "[17:06:31] Invoking AI Risk Analysis Engine for target 'https://demo.testfire.net'...",
+      "[17:06:31] Scan completed. Executive report is ready to view."
+    ]
+  }
+}
