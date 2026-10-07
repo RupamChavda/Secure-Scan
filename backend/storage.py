@@ -1,6 +1,7 @@
 import json
 import os
 from typing import Dict, List, Any
+from backend.database import get_db, is_mongodb_available
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
 os.makedirs(DATA_DIR, exist_ok=True)
@@ -9,6 +10,18 @@ SCANS_FILE = os.path.join(DATA_DIR, "scans_db.json")
 ASSETS_FILE = os.path.join(DATA_DIR, "assets_db.json")
 CVE_FILE = os.path.join(DATA_DIR, "cve_db.json")
 USERS_FILE = os.path.join(DATA_DIR, "users_db.json")
+WAZUH_FILE = os.path.join(DATA_DIR, "wazuh_config.json")
+
+DEFAULT_WAZUH_CONFIG = {
+    "enabled": True,
+    "host": "192.168.127.99",
+    "port": 55000,
+    "user": "wazuh",
+    "password": "wazuh",
+    "verify_ssl": False,
+    "use_mock_fallback": True
+}
+
 
 def load_json(filepath: str, default_data: Any) -> Any:
     if os.path.exists(filepath):
@@ -110,26 +123,132 @@ DEFAULT_CVES = [
     }
 ]
 
-# Helper functions for persistent storage
+def clean_mongo_doc(doc: Dict[str, Any]) -> Dict[str, Any]:
+    """Remove MongoDB internal _id field if present."""
+    if isinstance(doc, dict):
+        doc_copy = dict(doc)
+        doc_copy.pop("_id", None)
+        return doc_copy
+    return doc
+
+# --- Helper functions for MongoDB & File persistence ---
+
 def get_persisted_scans() -> Dict[str, Any]:
+    if is_mongodb_available():
+        try:
+            db = get_db()
+            cursor = db.scans.find({})
+            scans_dict = {}
+            for doc in cursor:
+                clean_doc = clean_mongo_doc(doc)
+                scan_id = clean_doc.get("id")
+                if scan_id:
+                    scans_dict[scan_id] = clean_doc
+            if scans_dict:
+                return scans_dict
+        except Exception as e:
+            print(f"[MongoDB] Error fetching scans: {e}")
+
+    # Fallback to local JSON file
     return load_json(SCANS_FILE, {})
 
 def save_persisted_scans(scans: Dict[str, Any]):
     save_json(SCANS_FILE, scans)
+    if is_mongodb_available():
+        try:
+            db = get_db()
+            for scan_id, scan_data in scans.items():
+                data_copy = clean_mongo_doc(scan_data)
+                data_copy["id"] = scan_id
+                db.scans.replace_one({"id": scan_id}, data_copy, upsert=True)
+        except Exception as e:
+            print(f"[MongoDB] Error saving scans: {e}")
 
 def get_persisted_assets() -> List[Dict[str, Any]]:
+    if is_mongodb_available():
+        try:
+            db = get_db()
+            docs = list(db.assets.find({}))
+            if docs:
+                return [clean_mongo_doc(d) for d in docs]
+            # Seed MongoDB if collection is empty
+            for asset in DEFAULT_ASSETS:
+                db.assets.replace_one({"id": asset["id"]}, asset, upsert=True)
+            return DEFAULT_ASSETS
+        except Exception as e:
+            print(f"[MongoDB] Error fetching assets: {e}")
+
+    # Fallback to JSON
     return load_json(ASSETS_FILE, DEFAULT_ASSETS)
 
 def save_persisted_assets(assets: List[Dict[str, Any]]):
     save_json(ASSETS_FILE, assets)
+    if is_mongodb_available():
+        try:
+            db = get_db()
+            db.assets.delete_many({}) # sync dataset
+            if assets:
+                clean_assets = [clean_mongo_doc(a) for a in assets]
+                db.assets.insert_many(clean_assets)
+        except Exception as e:
+            print(f"[MongoDB] Error saving assets: {e}")
 
 def get_persisted_cves() -> List[Dict[str, Any]]:
+    if is_mongodb_available():
+        try:
+            db = get_db()
+            docs = list(db.cves.find({}))
+            if docs:
+                return [clean_mongo_doc(d) for d in docs]
+            # Seed MongoDB if collection is empty
+            for cve in DEFAULT_CVES:
+                db.cves.replace_one({"cve_id": cve["cve_id"]}, cve, upsert=True)
+            return DEFAULT_CVES
+        except Exception as e:
+            print(f"[MongoDB] Error fetching CVEs: {e}")
+
+    # Fallback to JSON
     return load_json(CVE_FILE, DEFAULT_CVES)
 
 def save_persisted_cves(cves: List[Dict[str, Any]]):
     save_json(CVE_FILE, cves)
+    if is_mongodb_available():
+        try:
+            db = get_db()
+            db.cves.delete_many({})
+            if cves:
+                clean_cves = [clean_mongo_doc(c) for c in cves]
+                db.cves.insert_many(clean_cves)
+        except Exception as e:
+            print(f"[MongoDB] Error saving CVEs: {e}")
 
 def get_persisted_users(default_users: Dict[str, Any]) -> Dict[str, Any]:
+    if is_mongodb_available():
+        try:
+            db = get_db()
+            docs = list(db.users.find({}))
+            loaded = {}
+            for d in docs:
+                clean_d = clean_mongo_doc(d)
+                uname = clean_d.get("username")
+                if uname:
+                    loaded[uname] = clean_d
+            
+            # Ensure default users exist
+            updated = False
+            for uname, udata in default_users.items():
+                if uname not in loaded or loaded[uname].get("password_hash") != udata["password_hash"]:
+                    loaded[uname] = udata
+                    db.users.replace_one({"username": uname}, udata, upsert=True)
+                    updated = True
+            
+            if loaded:
+                save_json(USERS_FILE, loaded)
+                return loaded
+        except Exception as e:
+            print(f"[MongoDB] Error fetching users: {e}")
+
+    # Fallback to JSON
     loaded = load_json(USERS_FILE, default_users)
     updated = False
     for uname, udata in default_users.items():
@@ -142,3 +261,31 @@ def get_persisted_users(default_users: Dict[str, Any]) -> Dict[str, Any]:
 
 def save_persisted_users(users: Dict[str, Any]):
     save_json(USERS_FILE, users)
+    if is_mongodb_available():
+        try:
+            db = get_db()
+            for uname, udata in users.items():
+                clean_u = clean_mongo_doc(udata)
+                db.users.replace_one({"username": uname}, clean_u, upsert=True)
+        except Exception as e:
+            print(f"[MongoDB] Error saving users: {e}")
+
+def get_persisted_wazuh_config() -> Dict[str, Any]:
+    if is_mongodb_available():
+        try:
+            db = get_db()
+            doc = db.settings.find_one({"type": "wazuh_config"})
+            if doc:
+                return clean_mongo_doc(doc.get("config", DEFAULT_WAZUH_CONFIG))
+        except Exception as e:
+            print(f"[MongoDB] Error fetching Wazuh config: {e}")
+    return load_json(WAZUH_FILE, DEFAULT_WAZUH_CONFIG)
+
+def save_persisted_wazuh_config(config: Dict[str, Any]):
+    save_json(WAZUH_FILE, config)
+    if is_mongodb_available():
+        try:
+            db = get_db()
+            db.settings.replace_one({"type": "wazuh_config"}, {"type": "wazuh_config", "config": config}, upsert=True)
+        except Exception as e:
+            print(f"[MongoDB] Error saving Wazuh config: {e}")

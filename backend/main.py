@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles  # type: ignore
 import os
 
 from backend.config import settings
-from backend.routers import auth, assets, scans, ai_analysis, vulnerabilities, reports
+from backend.routers import auth, assets, scans, ai_analysis, vulnerabilities, reports, wazuh
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -40,8 +40,15 @@ app.include_router(scans.router, prefix=settings.API_PREFIX)
 app.include_router(ai_analysis.router, prefix=settings.API_PREFIX)
 app.include_router(vulnerabilities.router, prefix=settings.API_PREFIX)
 app.include_router(reports.router, prefix=settings.API_PREFIX)
+app.include_router(wazuh.router, prefix=settings.API_PREFIX)
 
+
+from backend.database import init_db, is_mongodb_available
 from backend.check_tools import check_all_tools
+
+@app.on_event("startup")
+def startup_event():
+    init_db()
 
 @app.get("/api/v1/health")
 def health_check():
@@ -49,12 +56,14 @@ def health_check():
         "status": "online",
         "service": settings.PROJECT_NAME,
         "version": settings.VERSION,
+        "database": "MongoDB" if is_mongodb_available() else "JSON File Storage (MongoDB Offline)",
         "engine": "Active Security Scanner & Risk Synthesizer"
     }
 
 @app.get("/api/v1/health/tools")
 def scanner_tools_check():
     return check_all_tools()
+
 
 
 # Mount static frontend directory if present

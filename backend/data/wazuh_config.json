@@ -1,0 +1,9 @@
+{
+  "host": "192.168.127.99",
+  "port": 55000,
+  "user": "wazuh",
+  "password": "wazuh",
+  "verify_ssl": false,
+  "enabled": true,
+  "use_mock_fallback": true
+}

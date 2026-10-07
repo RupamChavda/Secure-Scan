@@ -112,5 +112,1114 @@
       "[17:06:31] Invoking AI Risk Analysis Engine for target 'https://demo.testfire.net'...",
       "[17:06:31] Scan completed. Executive report is ready to view."
     ]
+  },
+  "scan-842ae25f": {
+    "id": "scan-842ae25f",
+    "target": "https://demo.testfire.net",
+    "target_type": "Website URL",
+    "scan_types": [
+      "Full Vulnerability Scan",
+      "OWASP Top 10 Scan",
+      "Source Code Security Scan",
+      "Dependency Scan",
+      "SSL Scan"
+    ],
+    "status": "Completed",
+    "progress": 100,
+    "start_time": "2026-08-21T04:38:24.378125Z",
+    "end_time": "2026-08-21T04:38:44.758738Z",
+    "duration_seconds": 20,
+    "total_vulnerabilities": 5,
+    "critical_count": 0,
+    "high_count": 0,
+    "medium_count": 0,
+    "low_count": 5,
+    "vulnerabilities": [
+      {
+        "title": "Target Web Service Unreachable",
+        "severity": "Info",
+        "cvss_score": 0.0,
+        "cve_id": "N/A",
+        "owasp_category": "N/A",
+        "mitre_attack": "N/A",
+        "description": "Could not establish an HTTP or HTTPS connection to 'https://demo.testfire.net'.",
+        "evidence": "HTTPSConnectionPool(host='demo.testfire.net', port=443): Max retries exceeded with url: / (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1082)')))",
+        "remediation": "Verify the target URL is correct, publicly reachable, and not blocked by a firewall.",
+        "id": "vuln-scan-8-1",
+        "affected_asset": "https://demo.testfire.net"
+      },
+      {
+        "title": "TLS/SSL Handshake Could Not Be Completed",
+        "severity": "Info",
+        "cvss_score": 0.0,
+        "cve_id": "N/A",
+        "owasp_category": "N/A",
+        "mitre_attack": "N/A",
+        "description": "A TLS connection to demo.testfire.net:443 could not be established, so certificate/protocol checks were skipped.",
+        "evidence": "[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1082)",
+        "remediation": "If this host should serve HTTPS, verify port 443 is open and a valid certificate is installed.",
+        "id": "vuln-scan-8-2",
+        "affected_asset": "https://demo.testfire.net"
+      },
+      {
+        "title": "Open Network Port Discovered: 80/tcp (HTTP)",
+        "severity": "Low",
+        "cvss_score": 3.1,
+        "cve_id": "N/A",
+        "owasp_category": "A05:2021-Security Misconfiguration",
+        "mitre_attack": "T1046 - Network Service Discovery",
+        "description": "Live TCP scan confirms port 80 (HTTP \u2014 Unencrypted web service) is open and accepting connections on demo.testfire.net (65.61.137.117). This is a lower-risk service but should still be reviewed if unexpected.",
+        "evidence": "TCP connect() to 65.61.137.117:80 succeeded (RESULT=0/OPEN).",
+        "remediation": "If HTTP on port 80 does not need to be publicly reachable, restrict it with a firewall/security group to trusted IP ranges only, and ensure strong authentication is enforced.",
+        "id": "vuln-scan-8-3",
+        "affected_asset": "https://demo.testfire.net"
+      },
+      {
+        "title": "Open Network Port Discovered: 443/tcp (HTTPS)",
+        "severity": "Low",
+        "cvss_score": 3.1,
+        "cve_id": "N/A",
+        "owasp_category": "A05:2021-Security Misconfiguration",
+        "mitre_attack": "T1046 - Network Service Discovery",
+        "description": "Live TCP scan confirms port 443 (HTTPS \u2014 Encrypted web service) is open and accepting connections on demo.testfire.net (65.61.137.117). This is a lower-risk service but should still be reviewed if unexpected.",
+        "evidence": "TCP connect() to 65.61.137.117:443 succeeded (RESULT=0/OPEN).",
+        "remediation": "If HTTPS on port 443 does not need to be publicly reachable, restrict it with a firewall/security group to trusted IP ranges only, and ensure strong authentication is enforced.",
+        "id": "vuln-scan-8-4",
+        "affected_asset": "https://demo.testfire.net"
+      },
+      {
+        "title": "Open Network Port Discovered: 8080/tcp (HTTP-Alt)",
+        "severity": "Low",
+        "cvss_score": 3.1,
+        "cve_id": "N/A",
+        "owasp_category": "A05:2021-Security Misconfiguration",
+        "mitre_attack": "T1046 - Network Service Discovery",
+        "description": "Live TCP scan confirms port 8080 (HTTP-Alt \u2014 Alternate / proxy web service) is open and accepting connections on demo.testfire.net (65.61.137.117). This is a lower-risk service but should still be reviewed if unexpected.",
+        "evidence": "TCP connect() to 65.61.137.117:8080 succeeded (RESULT=0/OPEN).",
+        "remediation": "If HTTP-Alt on port 8080 does not need to be publicly reachable, restrict it with a firewall/security group to trusted IP ranges only, and ensure strong authentication is enforced.",
+        "id": "vuln-scan-8-5",
+        "affected_asset": "https://demo.testfire.net"
+      }
+    ],
+    "ai_analysis": {
+      "overall_risk_score": 0.0,
+      "business_impact": "No security issues were identified on 'https://demo.testfire.net' during this scan. Keep up regular scanning to catch new risks early.",
+      "technical_impact": "Findings breakdown for this scan: 0 Critical, 0 High, 0 Medium, 0 Low. Exploitable vectors include network exposure, injection flaws, missing security headers/encryption, or leaked credentials, depending on the specific findings below.",
+      "likelihood": "Minimal \u2014 no exploitable weaknesses were found in this scan.",
+      "recommendations": [
+        "Re-run this scan after applying fixes to confirm the issues are resolved.",
+        "Review the detailed findings below with your technical/IT team for step-by-step fixes."
+      ],
+      "patch_priority": [
+        "No urgent patches required based on current findings."
+      ],
+      "executive_summary": "Automated security audit for 'https://demo.testfire.net' identified 5 total finding(s): 0 Critical, 0 High, 0 Medium, 0 Low. No urgent action is required, but continued monitoring is advised."
+    },
+    "requested_by": "alex",
+    "logs": [
+      "[04:38:24] Scan request queued for target https://demo.testfire.net.",
+      "[04:38:24] Starting SecureScan AI dynamic scan engine...",
+      "[04:38:24] Analyzing target fingerprint: https://demo.testfire.net",
+      "[04:38:24] Running live HTTP security header & configuration analysis...",
+      "[04:38:26] Performing live TLS/SSL certificate & protocol scan...",
+      "[04:38:27] Scanning for exposed network ports...",
+      "[04:38:44] Invoking AI Risk Analysis Engine for target 'https://demo.testfire.net'...",
+      "[04:38:44] Scan completed. Executive report is ready to view."
+    ]
+  },
+  "scan-3966a5e2": {
+    "id": "scan-3966a5e2",
+    "target": "https://demo.testfire.net",
+    "target_type": "Website URL",
+    "scan_types": [
+      "Full Vulnerability Scan",
+      "OWASP Top 10 Scan",
+      "Source Code Security Scan",
+      "Dependency Scan",
+      "SSL Scan"
+    ],
+    "status": "Queued",
+    "progress": 0,
+    "start_time": "2026-08-21T04:48:33.671426Z",
+    "end_time": null,
+    "duration_seconds": 0,
+    "total_vulnerabilities": 0,
+    "critical_count": 0,
+    "high_count": 0,
+    "medium_count": 0,
+    "low_count": 0,
+    "vulnerabilities": [],
+    "ai_analysis": null,
+    "requested_by": "alex",
+    "logs": [
+      "[04:48:33] Scan request queued for target https://demo.testfire.net.",
+      "[04:48:33] Rescan audit initiated for previous scan 'scan-842ae25f'."
+    ],
+    "parent_scan_id": "scan-842ae25f"
+  },
+  "scan-4f7486cd": {
+    "id": "scan-4f7486cd",
+    "target": "https://chatgpt.com/s/t_6aba163b2c1c8191b8f146e46fccf525",
+    "target_type": "Website URL",
+    "scan_types": [
+      "Full Vulnerability Scan",
+      "OWASP Top 10 Scan",
+      "Source Code Security Scan",
+      "Dependency Scan",
+      "SSL Scan"
+    ],
+    "status": "Completed",
+    "progress": 100,
+    "start_time": "2026-09-29T03:53:23.996355Z",
+    "end_time": "2026-09-29T03:53:45.899834Z",
+    "duration_seconds": 21,
+    "total_vulnerabilities": 8,
+    "critical_count": 0,
+    "high_count": 1,
+    "medium_count": 2,
+    "low_count": 5,
+    "vulnerabilities": [
+      {
+        "title": "Missing HTTP Security Headers (2 of 5 recommended headers absent)",
+        "severity": "Medium",
+        "cvss_score": 5.3,
+        "cve_id": "N/A",
+        "owasp_category": "A05:2021-Security Misconfiguration",
+        "mitre_attack": "T1189 - Drive-by Compromise",
+        "description": "The live response from https://chatgpt.com/s/t_6aba163b2c1c8191b8f146e46fccf525 is missing 2 recommended security headers:\n- Content-Security-Policy: Restricts which scripts/resources a page can load, mitigating Cross-Site Scripting (XSS).\n- X-Frame-Options: Prevents the site from being embedded in a hidden iframe (clickjacking).",
+        "evidence": "HTTP 200 response headers observed: {'Date': 'Tue, 29 Sep 2026 03:53:30 GMT', 'Content-Type': 'text/html; charset=utf-8', 'Transfer-Encoding': 'chunked', 'Connection': 'keep-alive', 'X-Content-Type-Options': 'nosniff', 'Cache-Control': 'private, no-store', 'Cross-Origin-Opener-Policy': 'same-origin-allow-popups', 'Server': 'cloudflare', 'Set-Cookie': '__Host-next-auth.csrf-token=c7e9dd03355ac59d345d8e98f09676c3b3a9895d7b70eb6d7ebd3d1ed6f620c5%7Cb500f831dcf36c45e981beee5ac6246365f6e579da77e9917fdacdc373361804; Path=/; HttpOnly; Secure; SameSite=Lax, __Secure-next-auth.callback-url=https%3A%2F%2Fchatgpt.com%2Cchat.edge.unified-97.api.openai.com%2Cchat.gateway.unified-212.api.openai.com; Path=/; HttpOnly; Secure; SameSite=Lax, oai-did=97978cd2-bfc4-46f5-b79b-90d7f7daae34; Path=/; Domain=chatgpt.com; Max-Age=31104000; SameSite=Lax, __cf_bm=tR0NfvQDBwjh7l.8x2Cxu8HhtdBSKk3nhQeHJWLpxTk-1790654009.7478547-1.0.1.1-MJe9oaeUmmqE.ytVi9ogbnpB9..o655axAAm8I..jTkF9H9r6lO6QIzjaFIVs29MYuYFUPBsCCPj9P2P412OSZ5UGiaFCBI0ksOf_jSXsNevbzJXzsnYgbdwynP1.4Mx; HttpOnly; SameSite=None; Secure; Path=/; Domain=chatgpt.com; Expires=Tue, 29 Sep 2026 04:23:30 GMT, __cflb=0H28vzvP5FJafnkHxjEtGkoEyvgGZvmg1iVyKc1mYoM; HttpOnly; SameSite=None; Secure; Path=/; Expires=Tue, 29 Sep 2026 04:53:30 GMT, _cfuvid=YtrAN_drVfg0vjyd2VxIi_nHbpUO5PyH63P5sqolLsU-1790654009.7478547-1.0.1.1-8vTOIdWmCiFpgxpFWk.6B.hKnU2yCC_fdjzQ.oiUW4E; HttpOnly; SameSite=None; Secure; Path=/; Domain=chatgpt.com', 'Referrer-Policy': 'strict-origin-when-cross-origin', 'cf-cache-status': 'DYNAMIC', 'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload', 'Nel': '{\"report_to\":\"cf-nel\",\"success_fraction\":0.01,\"max_age\":604800}', 'Report-To': '{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=tUD%2F6b%2BzepIKwa3KeqBMR0OUM%2FtU33yVSHQ1mqWnI61pkt1JEI5DMfJmKWY4NLH5v5IDDnghr56%2BulELVRAZMB1pNKEhmNVVG9ChmDJIfAGoid%2F6INsY1immb0Tw\"}]}', 'Content-Encoding': 'gzip', 'CF-RAY': 'a4280a88ebfaa3b1-AMD'}",
+        "remediation": "Configure the web server / application framework to emit the missing headers listed above.",
+        "id": "vuln-scan-4-1",
+        "affected_asset": "https://chatgpt.com/s/t_6aba163b2c1c8191b8f146e46fccf525"
+      },
+      {
+        "title": "Server Technology Banner Disclosed in Response Headers",
+        "severity": "Low",
+        "cvss_score": 3.1,
+        "cve_id": "N/A",
+        "owasp_category": "A05:2021-Security Misconfiguration",
+        "mitre_attack": "T1592 - Gather Victim Host Information",
+        "description": "The server discloses its underlying software/version ('cloudflare'), which helps attackers select known exploits for that exact version.",
+        "evidence": "Response header: Server/X-Powered-By = cloudflare",
+        "remediation": "Suppress or genericize the Server/X-Powered-By response header in the web server configuration.",
+        "id": "vuln-scan-4-2",
+        "affected_asset": "https://chatgpt.com/s/t_6aba163b2c1c8191b8f146e46fccf525"
+      },
+      {
+        "title": "Session Cookies Missing Secure/HttpOnly Flags",
+        "severity": "Medium",
+        "cvss_score": 5.4,
+        "cve_id": "N/A",
+        "owasp_category": "A05:2021-Security Misconfiguration",
+        "mitre_attack": "T1539 - Steal Web Session Cookie",
+        "description": "Cookies issued by this site can be read by JavaScript and/or transmitted over unencrypted connections, increasing the risk of session hijacking.",
+        "evidence": "Cookies observed: oai-did (missing Secure, HttpOnly)",
+        "remediation": "Set the 'Secure' and 'HttpOnly' (and ideally 'SameSite=Strict') flags on all session cookies.",
+        "id": "vuln-scan-4-3",
+        "affected_asset": "https://chatgpt.com/s/t_6aba163b2c1c8191b8f146e46fccf525"
+      },
+      {
+        "title": "Unsanitized Input Reflection Detected (Potential XSS Vector)",
+        "severity": "High",
+        "cvss_score": 7.2,
+        "cve_id": "N/A",
+        "owasp_category": "A03:2021-Injection",
+        "mitre_attack": "T1189 - Drive-by Compromise",
+        "description": "A harmless test string sent in a query parameter was reflected back unmodified in the page response. If this value is later rendered without encoding, it can be an entry point for Cross-Site Scripting.",
+        "evidence": "GET https://chatgpt.com/s/t_6aba163b2c1c8191b8f146e46fccf525?q=sscanxss123 -> response body contains the literal marker 'sscanxss123'.",
+        "remediation": "Ensure all user-supplied input is contextually encoded/escaped before being rendered back into HTML.",
+        "id": "vuln-scan-4-4",
+        "affected_asset": "https://chatgpt.com/s/t_6aba163b2c1c8191b8f146e46fccf525"
+      },
+      {
+        "title": "TLS Configuration Check Passed",
+        "severity": "Info",
+        "cvss_score": 0.0,
+        "cve_id": "N/A",
+        "owasp_category": "A02:2021-Cryptographic Failures",
+        "mitre_attack": "N/A",
+        "description": "Live handshake to chatgpt.com:443 negotiated TLSv1.3 with a currently valid certificate \u2014 no issues found.",
+        "evidence": "Protocol: TLSv1.3, Certificate notAfter: Dec 19 21:31:25 2026 GMT",
+        "remediation": "No action required. Continue periodic re-scanning.",
+        "id": "vuln-scan-4-5",
+        "affected_asset": "https://chatgpt.com/s/t_6aba163b2c1c8191b8f146e46fccf525"
+      },
+      {
+        "title": "Open Network Port Discovered: 80/tcp (HTTP)",
+        "severity": "Low",
+        "cvss_score": 3.1,
+        "cve_id": "N/A",
+        "owasp_category": "A05:2021-Security Misconfiguration",
+        "mitre_attack": "T1046 - Network Service Discovery",
+        "description": "Live TCP scan confirms port 80 (HTTP \u2014 Unencrypted web service) is open and accepting connections on chatgpt.com (172.64.155.209). This is a lower-risk service but should still be reviewed if unexpected.",
+        "evidence": "TCP connect() to 172.64.155.209:80 succeeded (RESULT=0/OPEN).",
+        "remediation": "If HTTP on port 80 does not need to be publicly reachable, restrict it with a firewall/security group to trusted IP ranges only, and ensure strong authentication is enforced.",
+        "id": "vuln-scan-4-6",
+        "affected_asset": "https://chatgpt.com/s/t_6aba163b2c1c8191b8f146e46fccf525"
+      },
+      {
+        "title": "Open Network Port Discovered: 443/tcp (HTTPS)",
+        "severity": "Low",
+        "cvss_score": 3.1,
+        "cve_id": "N/A",
+        "owasp_category": "A05:2021-Security Misconfiguration",
+        "mitre_attack": "T1046 - Network Service Discovery",
+        "description": "Live TCP scan confirms port 443 (HTTPS \u2014 Encrypted web service) is open and accepting connections on chatgpt.com (172.64.155.209). This is a lower-risk service but should still be reviewed if unexpected.",
+        "evidence": "TCP connect() to 172.64.155.209:443 succeeded (RESULT=0/OPEN).",
+        "remediation": "If HTTPS on port 443 does not need to be publicly reachable, restrict it with a firewall/security group to trusted IP ranges only, and ensure strong authentication is enforced.",
+        "id": "vuln-scan-4-7",
+        "affected_asset": "https://chatgpt.com/s/t_6aba163b2c1c8191b8f146e46fccf525"
+      },
+      {
+        "title": "Open Network Port Discovered: 8080/tcp (HTTP-Alt)",
+        "severity": "Low",
+        "cvss_score": 3.1,
+        "cve_id": "N/A",
+        "owasp_category": "A05:2021-Security Misconfiguration",
+        "mitre_attack": "T1046 - Network Service Discovery",
+        "description": "Live TCP scan confirms port 8080 (HTTP-Alt \u2014 Alternate / proxy web service) is open and accepting connections on chatgpt.com (172.64.155.209). This is a lower-risk service but should still be reviewed if unexpected.",
+        "evidence": "TCP connect() to 172.64.155.209:8080 succeeded (RESULT=0/OPEN).",
+        "remediation": "If HTTP-Alt on port 8080 does not need to be publicly reachable, restrict it with a firewall/security group to trusted IP ranges only, and ensure strong authentication is enforced.",
+        "id": "vuln-scan-4-8",
+        "affected_asset": "https://chatgpt.com/s/t_6aba163b2c1c8191b8f146e46fccf525"
+      }
+    ],
+    "ai_analysis": {
+      "overall_risk_score": 0.0,
+      "business_impact": "No security issues were identified on 'https://chatgpt.com/s/t_6aba163b2c1c8191b8f146e46fccf525' during this scan. Keep up regular scanning to catch new risks early.",
+      "technical_impact": "Findings breakdown for this scan: 0 Critical, 0 High, 0 Medium, 0 Low. Exploitable vectors include network exposure, injection flaws, missing security headers/encryption, or leaked credentials, depending on the specific findings below.",
+      "likelihood": "Minimal \u2014 no exploitable weaknesses were found in this scan.",
+      "recommendations": [
+        "Re-run this scan after applying fixes to confirm the issues are resolved.",
+        "Review the detailed findings below with your technical/IT team for step-by-step fixes."
+      ],
+      "patch_priority": [
+        "No urgent patches required based on current findings."
+      ],
+      "executive_summary": "Automated security audit for 'https://chatgpt.com/s/t_6aba163b2c1c8191b8f146e46fccf525' identified 8 total finding(s): 0 Critical, 0 High, 0 Medium, 0 Low. No urgent action is required, but continued monitoring is advised."
+    },
+    "requested_by": "alex",
+    "logs": [
+      "[03:53:23] Scan request queued for target https://chatgpt.com/s/t_6aba163b2c1c8191b8f146e46fccf525.",
+      "[03:53:24] Starting SecureScan AI dynamic scan engine...",
+      "[03:53:24] Analyzing target fingerprint: https://chatgpt.com/s/t_6aba163b2c1c8191b8f146e46fccf525",
+      "[03:53:24] Running live HTTP security header & configuration analysis...",
+      "[03:53:27] Performing live TLS/SSL certificate & protocol scan...",
+      "[03:53:28] Scanning for exposed network ports...",
+      "[03:53:45] Invoking AI Risk Analysis Engine for target 'https://chatgpt.com/s/t_6aba163b2c1c8191b8f146e46fccf525'...",
+      "[03:53:45] Scan completed. Executive report is ready to view."
+    ]
+  },
+  "scan-7fb5f5cb": {
+    "id": "scan-7fb5f5cb",
+    "target": "Uploaded Project: Security-platform-main.zip",
+    "target_type": "Uploaded ZIP",
+    "scan_types": [
+      "Source Code Security Scan",
+      "Dependency Scan",
+      "OWASP Top 10 Scan"
+    ],
+    "status": "Completed",
+    "progress": 100,
+    "start_time": "2026-09-29T03:55:35.251324Z",
+    "end_time": "2026-09-29T03:55:37.718210Z",
+    "duration_seconds": 2,
+    "total_vulnerabilities": 1,
+    "critical_count": 0,
+    "high_count": 0,
+    "medium_count": 0,
+    "low_count": 1,
+    "vulnerabilities": [
+      {
+        "title": "Static Secret Scan Completed \u2014 No Hardcoded Credentials Found",
+        "severity": "Info",
+        "cvss_score": 0.0,
+        "cve_id": "N/A",
+        "owasp_category": "A07:2021-Identification and Authentication Failures",
+        "mitre_attack": "N/A",
+        "description": "Scanned 18 source files for hardcoded API keys, passwords, and private keys \u2014 none were found.",
+        "evidence": "18 text/config files analyzed.",
+        "remediation": "No action required. Continue to avoid committing secrets to source control.",
+        "id": "vuln-scan-7-1",
+        "affected_asset": "Uploaded Project: Security-platform-main.zip"
+      }
+    ],
+    "ai_analysis": {
+      "overall_risk_score": 0.0,
+      "business_impact": "No security issues were identified on 'Uploaded Project: Security-platform-main.zip' during this scan. Keep up regular scanning to catch new risks early.",
+      "technical_impact": "Findings breakdown for this scan: 0 Critical, 0 High, 0 Medium, 0 Low. Exploitable vectors include network exposure, injection flaws, missing security headers/encryption, or leaked credentials, depending on the specific findings below.",
+      "likelihood": "Minimal \u2014 no exploitable weaknesses were found in this scan.",
+      "recommendations": [
+        "Re-run this scan after applying fixes to confirm the issues are resolved.",
+        "Review the detailed findings below with your technical/IT team for step-by-step fixes."
+      ],
+      "patch_priority": [
+        "No urgent patches required based on current findings."
+      ],
+      "executive_summary": "Automated security audit for 'Uploaded Project: Security-platform-main.zip' identified 1 total finding(s): 0 Critical, 0 High, 0 Medium, 0 Low. No urgent action is required, but continued monitoring is advised."
+    },
+    "requested_by": "alex",
+    "logs": [
+      "[03:55:35] Scan request queued for target Uploaded Project: Security-platform-main.zip.",
+      "[03:55:35] Extraction and static analysis queued.",
+      "[03:55:35] Starting SecureScan AI dynamic scan engine...",
+      "[03:55:35] Analyzing target fingerprint: Uploaded Project: Security-platform-main.zip",
+      "[03:55:35] Running static source code analysis: secret detection & dependency CVE audit...",
+      "[03:55:37] Invoking AI Risk Analysis Engine for target 'Uploaded Project: Security-platform-main.zip'...",
+      "[03:55:37] Scan completed. Executive report is ready to view."
+    ]
+  },
+  "scan-b4f71404": {
+    "id": "scan-b4f71404",
+    "target": "Uploaded Project: Security-platform-main.zip",
+    "target_type": "Uploaded ZIP",
+    "scan_types": [
+      "Source Code Security Scan",
+      "Dependency Scan",
+      "OWASP Top 10 Scan"
+    ],
+    "status": "Completed",
+    "progress": 100,
+    "start_time": "2026-09-29T03:55:35.256204Z",
+    "end_time": "2026-09-29T03:55:37.718764Z",
+    "duration_seconds": 2,
+    "total_vulnerabilities": 1,
+    "critical_count": 0,
+    "high_count": 0,
+    "medium_count": 0,
+    "low_count": 1,
+    "vulnerabilities": [
+      {
+        "title": "Static Secret Scan Completed \u2014 No Hardcoded Credentials Found",
+        "severity": "Info",
+        "cvss_score": 0.0,
+        "cve_id": "N/A",
+        "owasp_category": "A07:2021-Identification and Authentication Failures",
+        "mitre_attack": "N/A",
+        "description": "Scanned 18 source files for hardcoded API keys, passwords, and private keys \u2014 none were found.",
+        "evidence": "18 text/config files analyzed.",
+        "remediation": "No action required. Continue to avoid committing secrets to source control.",
+        "id": "vuln-scan-b-1",
+        "affected_asset": "Uploaded Project: Security-platform-main.zip"
+      }
+    ],
+    "ai_analysis": {
+      "overall_risk_score": 0.0,
+      "business_impact": "No security issues were identified on 'Uploaded Project: Security-platform-main.zip' during this scan. Keep up regular scanning to catch new risks early.",
+      "technical_impact": "Findings breakdown for this scan: 0 Critical, 0 High, 0 Medium, 0 Low. Exploitable vectors include network exposure, injection flaws, missing security headers/encryption, or leaked credentials, depending on the specific findings below.",
+      "likelihood": "Minimal \u2014 no exploitable weaknesses were found in this scan.",
+      "recommendations": [
+        "Re-run this scan after applying fixes to confirm the issues are resolved.",
+        "Review the detailed findings below with your technical/IT team for step-by-step fixes."
+      ],
+      "patch_priority": [
+        "No urgent patches required based on current findings."
+      ],
+      "executive_summary": "Automated security audit for 'Uploaded Project: Security-platform-main.zip' identified 1 total finding(s): 0 Critical, 0 High, 0 Medium, 0 Low. No urgent action is required, but continued monitoring is advised."
+    },
+    "requested_by": "alex",
+    "logs": [
+      "[03:55:35] Scan request queued for target Uploaded Project: Security-platform-main.zip.",
+      "[03:55:35] Extraction and static analysis queued.",
+      "[03:55:35] Starting SecureScan AI dynamic scan engine...",
+      "[03:55:35] Analyzing target fingerprint: Uploaded Project: Security-platform-main.zip",
+      "[03:55:35] Running static source code analysis: secret detection & dependency CVE audit...",
+      "[03:55:37] Invoking AI Risk Analysis Engine for target 'Uploaded Project: Security-platform-main.zip'...",
+      "[03:55:37] Scan completed. Executive report is ready to view."
+    ]
+  },
+  "scan-db438a41": {
+    "id": "scan-db438a41",
+    "target": "https://www.google.com/",
+    "target_type": "Website URL",
+    "scan_types": [
+      "Full Vulnerability Scan",
+      "OWASP Top 10 Scan",
+      "Source Code Security Scan",
+      "Dependency Scan",
+      "SSL Scan"
+    ],
+    "status": "Completed",
+    "progress": 100,
+    "start_time": "2026-09-29T03:56:44.308524Z",
+    "end_time": "2026-09-29T03:57:05.129205Z",
+    "duration_seconds": 20,
+    "total_vulnerabilities": 6,
+    "critical_count": 0,
+    "high_count": 2,
+    "medium_count": 1,
+    "low_count": 3,
+    "vulnerabilities": [
+      {
+        "title": "Missing HTTP Security Headers (4 of 5 recommended headers absent)",
+        "severity": "High",
+        "cvss_score": 6.8,
+        "cve_id": "N/A",
+        "owasp_category": "A05:2021-Security Misconfiguration",
+        "mitre_attack": "T1189 - Drive-by Compromise",
+        "description": "The live response from https://www.google.com/ is missing 4 recommended security headers:\n- Strict-Transport-Security: Forces browsers to only use HTTPS, preventing downgrade/SSL-stripping attacks.\n- Content-Security-Policy: Restricts which scripts/resources a page can load, mitigating Cross-Site Scripting (XSS).\n- X-Content-Type-Options: Stops browsers from guessing (\"sniffing\") file types, which can be abused to run malicious scripts.\n- Referrer-Policy: Controls how much URL/referrer information leaks to other sites.",
+        "evidence": "HTTP 200 response headers observed: {'Content-Type': 'text/html; charset=ISO-8859-1', 'Date': 'Tue, 29 Sep 2026 03:56:50 GMT', 'Expires': '-1', 'Cache-Control': 'private, max-age=0', 'Content-Security-Policy-Report-Only': \"object-src 'none';base-uri 'self';script-src 'nonce-HjyTbZ9lg3WJAFLf-UWOrw' 'strict-dynamic' 'report-sample' 'unsafe-eval' 'unsafe-inline' https: http:;report-uri https://csp.withgoogle.com/csp/gws/other-hp\", 'Accept-CH': 'Sec-CH-Prefers-Color-Scheme', 'P3P': 'CP=\"This is not a P3P policy! See g.co/p3phelp for more info.\"', 'Content-Encoding': 'gzip', 'Server': 'gws', 'X-XSS-Protection': '0', 'X-Frame-Options': 'SAMEORIGIN', 'Set-Cookie': '__Secure-STRP=ABNhA6jMOsu4m06VmQ_onsGOZqBPqb41p_YrhdbPKmiiQA0ndoeAHuPcPna7SyJ8A6rZFNrChlA2QLHDYFefcpsqfIlIb_OQmA; expires=Tue, 29-Sep-2026 04:01:50 GMT; path=/; domain=.google.com; Secure; SameSite=strict, AEC=Aaa9EJrAneG-XUP8_EeF5dAP4cTXE1uKi2lTjPpS3RRYiEBaTAWWXOhc8g; expires=Sun, 28-Mar-2027 03:56:50 GMT; path=/; domain=.google.com; Secure; HttpOnly; SameSite=lax, NID=CvMBCAESpQEBOxGDSBrkQKL0gjxt1UlkOzenRzx0INWzYs9ZgSXx9MbAus1butU7FEHRKRCE17nR1eVC09NKPy9m5Jo-dY8OA-zWRh4EBaXYrSY_5WOC0rdcQ3w2Ni13L6vac44IjBBnWNm1UPPQH08FM8Blyvgwqf60Ubar1C7r13ydkZ-smOfveIuXujZCbhH3B1y9wjEaBodNVl1PBM8c21fEXEe3zc0b1eooATJFAdKsB88g_4X4hJVljLoHpypFff_RTw059ueYjHV6GmBhebo81AEC_oH3MV27f6yqNHDl6JOX3hTp6_39bLfh9Ts1qqgP; expires=Wed, 31-Mar-2027 03:56:50 GMT; path=/; domain=.google.com; HttpOnly', 'Alt-Svc': 'h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000', 'Transfer-Encoding': 'chunked'}",
+        "remediation": "Configure the web server / application framework to emit the missing headers listed above.",
+        "id": "vuln-scan-d-1",
+        "affected_asset": "https://www.google.com/"
+      },
+      {
+        "title": "Server Technology Banner Disclosed in Response Headers",
+        "severity": "Low",
+        "cvss_score": 3.1,
+        "cve_id": "N/A",
+        "owasp_category": "A05:2021-Security Misconfiguration",
+        "mitre_attack": "T1592 - Gather Victim Host Information",
+        "description": "The server discloses its underlying software/version ('gws'), which helps attackers select known exploits for that exact version.",
+        "evidence": "Response header: Server/X-Powered-By = gws",
+        "remediation": "Suppress or genericize the Server/X-Powered-By response header in the web server configuration.",
+        "id": "vuln-scan-d-2",
+        "affected_asset": "https://www.google.com/"
+      },
+      {
+        "title": "Session Cookies Missing Secure/HttpOnly Flags",
+        "severity": "Medium",
+        "cvss_score": 5.4,
+        "cve_id": "N/A",
+        "owasp_category": "A05:2021-Security Misconfiguration",
+        "mitre_attack": "T1539 - Steal Web Session Cookie",
+        "description": "Cookies issued by this site can be read by JavaScript and/or transmitted over unencrypted connections, increasing the risk of session hijacking.",
+        "evidence": "Cookies observed: __Secure-STRP (missing HttpOnly); NID (missing Secure)",
+        "remediation": "Set the 'Secure' and 'HttpOnly' (and ideally 'SameSite=Strict') flags on all session cookies.",
+        "id": "vuln-scan-d-3",
+        "affected_asset": "https://www.google.com/"
+      },
+      {
+        "title": "Unsanitized Input Reflection Detected (Potential XSS Vector)",
+        "severity": "High",
+        "cvss_score": 7.2,
+        "cve_id": "N/A",
+        "owasp_category": "A03:2021-Injection",
+        "mitre_attack": "T1189 - Drive-by Compromise",
+        "description": "A harmless test string sent in a query parameter was reflected back unmodified in the page response. If this value is later rendered without encoding, it can be an entry point for Cross-Site Scripting.",
+        "evidence": "GET https://www.google.com/?q=sscanxss123 -> response body contains the literal marker 'sscanxss123'.",
+        "remediation": "Ensure all user-supplied input is contextually encoded/escaped before being rendered back into HTML.",
+        "id": "vuln-scan-d-4",
+        "affected_asset": "https://www.google.com/"
+      },
+      {
+        "title": "TLS Configuration Check Passed",
+        "severity": "Info",
+        "cvss_score": 0.0,
+        "cve_id": "N/A",
+        "owasp_category": "A02:2021-Cryptographic Failures",
+        "mitre_attack": "N/A",
+        "description": "Live handshake to www.google.com:443 negotiated TLSv1.3 with a currently valid certificate \u2014 no issues found.",
+        "evidence": "Protocol: TLSv1.3, Certificate notAfter: Dec  3 19:24:07 2026 GMT",
+        "remediation": "No action required. Continue periodic re-scanning.",
+        "id": "vuln-scan-d-5",
+        "affected_asset": "https://www.google.com/"
+      },
+      {
+        "title": "Open Network Port Discovered: 443/tcp (HTTPS)",
+        "severity": "Low",
+        "cvss_score": 3.1,
+        "cve_id": "N/A",
+        "owasp_category": "A05:2021-Security Misconfiguration",
+        "mitre_attack": "T1046 - Network Service Discovery",
+        "description": "Live TCP scan confirms port 443 (HTTPS \u2014 Encrypted web service) is open and accepting connections on www.google.com (142.251.150.119). This is a lower-risk service but should still be reviewed if unexpected.",
+        "evidence": "TCP connect() to 142.251.150.119:443 succeeded (RESULT=0/OPEN).",
+        "remediation": "If HTTPS on port 443 does not need to be publicly reachable, restrict it with a firewall/security group to trusted IP ranges only, and ensure strong authentication is enforced.",
+        "id": "vuln-scan-d-6",
+        "affected_asset": "https://www.google.com/"
+      }
+    ],
+    "ai_analysis": {
+      "overall_risk_score": 0.0,
+      "business_impact": "No security issues were identified on 'https://www.google.com/' during this scan. Keep up regular scanning to catch new risks early.",
+      "technical_impact": "Findings breakdown for this scan: 0 Critical, 0 High, 0 Medium, 0 Low. Exploitable vectors include network exposure, injection flaws, missing security headers/encryption, or leaked credentials, depending on the specific findings below.",
+      "likelihood": "Minimal \u2014 no exploitable weaknesses were found in this scan.",
+      "recommendations": [
+        "Re-run this scan after applying fixes to confirm the issues are resolved.",
+        "Review the detailed findings below with your technical/IT team for step-by-step fixes."
+      ],
+      "patch_priority": [
+        "No urgent patches required based on current findings."
+      ],
+      "executive_summary": "Automated security audit for 'https://www.google.com/' identified 6 total finding(s): 0 Critical, 0 High, 0 Medium, 0 Low. No urgent action is required, but continued monitoring is advised."
+    },
+    "requested_by": "alex",
+    "logs": [
+      "[03:56:44] Scan request queued for target https://www.google.com/.",
+      "[03:56:44] Starting SecureScan AI dynamic scan engine...",
+      "[03:56:44] Analyzing target fingerprint: https://www.google.com/",
+      "[03:56:44] Running live HTTP security header & configuration analysis...",
+      "[03:56:46] Performing live TLS/SSL certificate & protocol scan...",
+      "[03:56:47] Scanning for exposed network ports...",
+      "[03:57:05] Invoking AI Risk Analysis Engine for target 'https://www.google.com/'...",
+      "[03:57:05] Scan completed. Executive report is ready to view."
+    ]
+  },
+  "scan-fc63f1c2": {
+    "id": "scan-fc63f1c2",
+    "target": "https://demo.testfire.net",
+    "target_type": "Website URL",
+    "scan_types": [
+      "Full Vulnerability Scan",
+      "OWASP Top 10 Scan",
+      "Source Code Security Scan",
+      "Dependency Scan",
+      "SSL Scan"
+    ],
+    "status": "Completed",
+    "progress": 100,
+    "start_time": "2026-09-30T09:55:43.256774Z",
+    "end_time": "2026-09-30T09:56:03.879939Z",
+    "duration_seconds": 20,
+    "total_vulnerabilities": 4,
+    "critical_count": 0,
+    "high_count": 0,
+    "medium_count": 0,
+    "low_count": 4,
+    "vulnerabilities": [
+      {
+        "title": "Target Web Service Unreachable",
+        "severity": "Info",
+        "cvss_score": 0.0,
+        "cve_id": "N/A",
+        "owasp_category": "N/A",
+        "mitre_attack": "N/A",
+        "description": "Could not establish an HTTP or HTTPS connection to 'https://demo.testfire.net'.",
+        "evidence": "HTTPSConnectionPool(host='demo.testfire.net', port=443): Max retries exceeded with url: / (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1082)')))",
+        "remediation": "Verify the target URL is correct, publicly reachable, and not blocked by a firewall.",
+        "id": "vuln-scan-f-1",
+        "affected_asset": "https://demo.testfire.net"
+      },
+      {
+        "title": "TLS/SSL Handshake Could Not Be Completed",
+        "severity": "Info",
+        "cvss_score": 0.0,
+        "cve_id": "N/A",
+        "owasp_category": "N/A",
+        "mitre_attack": "N/A",
+        "description": "A TLS connection to demo.testfire.net:443 could not be established, so certificate/protocol checks were skipped.",
+        "evidence": "[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1082)",
+        "remediation": "If this host should serve HTTPS, verify port 443 is open and a valid certificate is installed.",
+        "id": "vuln-scan-f-2",
+        "affected_asset": "https://demo.testfire.net"
+      },
+      {
+        "title": "Open Network Port Discovered: 443/tcp (HTTPS)",
+        "severity": "Low",
+        "cvss_score": 3.1,
+        "cve_id": "N/A",
+        "owasp_category": "A05:2021-Security Misconfiguration",
+        "mitre_attack": "T1046 - Network Service Discovery",
+        "description": "Live TCP scan confirms port 443 (HTTPS \u2014 Encrypted web service) is open and accepting connections on demo.testfire.net (65.61.137.117). This is a lower-risk service but should still be reviewed if unexpected.",
+        "evidence": "TCP connect() to 65.61.137.117:443 succeeded (RESULT=0/OPEN).",
+        "remediation": "If HTTPS on port 443 does not need to be publicly reachable, restrict it with a firewall/security group to trusted IP ranges only, and ensure strong authentication is enforced.",
+        "id": "vuln-scan-f-3",
+        "affected_asset": "https://demo.testfire.net"
+      },
+      {
+        "title": "Open Network Port Discovered: 8080/tcp (HTTP-Alt)",
+        "severity": "Low",
+        "cvss_score": 3.1,
+        "cve_id": "N/A",
+        "owasp_category": "A05:2021-Security Misconfiguration",
+        "mitre_attack": "T1046 - Network Service Discovery",
+        "description": "Live TCP scan confirms port 8080 (HTTP-Alt \u2014 Alternate / proxy web service) is open and accepting connections on demo.testfire.net (65.61.137.117). This is a lower-risk service but should still be reviewed if unexpected.",
+        "evidence": "TCP connect() to 65.61.137.117:8080 succeeded (RESULT=0/OPEN).",
+        "remediation": "If HTTP-Alt on port 8080 does not need to be publicly reachable, restrict it with a firewall/security group to trusted IP ranges only, and ensure strong authentication is enforced.",
+        "id": "vuln-scan-f-4",
+        "affected_asset": "https://demo.testfire.net"
+      }
+    ],
+    "ai_analysis": {
+      "overall_risk_score": 0.0,
+      "business_impact": "No security issues were identified on 'https://demo.testfire.net' during this scan. Keep up regular scanning to catch new risks early.",
+      "technical_impact": "Findings breakdown for this scan: 0 Critical, 0 High, 0 Medium, 0 Low. Exploitable vectors include network exposure, injection flaws, missing security headers/encryption, or leaked credentials, depending on the specific findings below.",
+      "likelihood": "Minimal \u2014 no exploitable weaknesses were found in this scan.",
+      "recommendations": [
+        "Re-run this scan after applying fixes to confirm the issues are resolved.",
+        "Review the detailed findings below with your technical/IT team for step-by-step fixes."
+      ],
+      "patch_priority": [
+        "No urgent patches required based on current findings."
+      ],
+      "executive_summary": "Automated security audit for 'https://demo.testfire.net' identified 4 total finding(s): 0 Critical, 0 High, 0 Medium, 0 Low. No urgent action is required, but continued monitoring is advised. [RESCAN AUDIT RESULTS]: 0 out of 0 initial vulnerability finding(s) were successfully resolved in this audit! 4 finding(s) remain."
+    },
+    "requested_by": "alex",
+    "logs": [
+      "[09:55:43] Scan request queued for target https://demo.testfire.net.",
+      "[09:55:43] Rescan audit initiated for previous scan 'scan-3966a5e2'.",
+      "[09:55:43] Starting SecureScan dynamic scan engine...",
+      "[09:55:43] Analyzing target fingerprint: https://demo.testfire.net",
+      "[09:55:43] Running live HTTP security header & configuration analysis...",
+      "[09:55:45] Performing live TLS/SSL certificate & protocol scan...",
+      "[09:55:46] Scanning for exposed network ports...",
+      "[09:56:03] Invoking AI Risk Analysis Engine for target 'https://demo.testfire.net'...",
+      "[09:56:03] Scan completed. Executive report is ready to view."
+    ],
+    "parent_scan_id": "scan-3966a5e2",
+    "remediation_diff": {
+      "parent_scan_id": "scan-3966a5e2",
+      "initial_count": 0,
+      "resolved_count": 0,
+      "remaining_count": 4,
+      "resolved_titles": []
+    }
+  },
+  "scan-716b6171": {
+    "id": "scan-716b6171",
+    "target": "https://demo.testfire.net",
+    "target_type": "Website URL",
+    "scan_types": [
+      "Full Vulnerability Scan",
+      "OWASP Top 10 Scan",
+      "Source Code Security Scan",
+      "Dependency Scan",
+      "SSL Scan"
+    ],
+    "status": "Queued",
+    "progress": 0,
+    "start_time": "2026-09-30T09:56:05.758131Z",
+    "end_time": null,
+    "duration_seconds": 0,
+    "total_vulnerabilities": 0,
+    "critical_count": 0,
+    "high_count": 0,
+    "medium_count": 0,
+    "low_count": 0,
+    "vulnerabilities": [],
+    "ai_analysis": null,
+    "requested_by": "alex",
+    "logs": [
+      "[09:56:05] Scan request queued for target https://demo.testfire.net.",
+      "[09:56:05] Rescan audit initiated for previous scan 'scan-3966a5e2'."
+    ],
+    "parent_scan_id": "scan-3966a5e2"
+  },
+  "scan-34b9ec96": {
+    "id": "scan-34b9ec96",
+    "target": "https://demo.testfire.net",
+    "target_type": "Website URL",
+    "scan_types": [
+      "Full Vulnerability Scan",
+      "OWASP Top 10 Scan",
+      "Source Code Security Scan",
+      "Dependency Scan",
+      "SSL Scan"
+    ],
+    "status": "Running",
+    "progress": 65,
+    "start_time": "2026-09-30T09:56:05.763006Z",
+    "end_time": null,
+    "duration_seconds": 0,
+    "total_vulnerabilities": 0,
+    "critical_count": 0,
+    "high_count": 0,
+    "medium_count": 0,
+    "low_count": 0,
+    "vulnerabilities": [],
+    "ai_analysis": null,
+    "requested_by": "alex",
+    "logs": [
+      "[09:56:05] Scan request queued for target https://demo.testfire.net.",
+      "[09:56:05] Rescan audit initiated for previous scan 'scan-3966a5e2'.",
+      "[09:56:05] Starting SecureScan dynamic scan engine...",
+      "[09:56:05] Analyzing target fingerprint: https://demo.testfire.net",
+      "[09:56:06] Running live HTTP security header & configuration analysis...",
+      "[09:56:08] Performing live TLS/SSL certificate & protocol scan...",
+      "[09:56:09] Scanning for exposed network ports..."
+    ],
+    "parent_scan_id": "scan-3966a5e2"
+  },
+  "scan-49eb970a": {
+    "id": "scan-49eb970a",
+    "target": "https://demo.testfire.net",
+    "target_type": "Website URL",
+    "scan_types": [
+      "Full Vulnerability Scan",
+      "OWASP Top 10 Scan",
+      "Source Code Security Scan",
+      "Dependency Scan",
+      "SSL Scan"
+    ],
+    "status": "Running",
+    "progress": 50,
+    "start_time": "2026-09-30T09:56:12.557426Z",
+    "end_time": null,
+    "duration_seconds": 0,
+    "total_vulnerabilities": 0,
+    "critical_count": 0,
+    "high_count": 0,
+    "medium_count": 0,
+    "low_count": 0,
+    "vulnerabilities": [],
+    "ai_analysis": null,
+    "requested_by": "alex",
+    "logs": [
+      "[09:56:12] Scan request queued for target https://demo.testfire.net.",
+      "[09:56:12] Rescan audit initiated for previous scan 'scan-716b6171'.",
+      "[09:56:12] Starting SecureScan dynamic scan engine...",
+      "[09:56:12] Analyzing target fingerprint: https://demo.testfire.net",
+      "[09:56:13] Running live HTTP security header & configuration analysis...",
+      "[09:56:14] Performing live TLS/SSL certificate & protocol scan..."
+    ],
+    "parent_scan_id": "scan-716b6171"
+  },
+  "scan-8ca8b424": {
+    "id": "scan-8ca8b424",
+    "target": "https://demo.testfire.net",
+    "target_type": "Website URL",
+    "scan_types": [
+      "Full Vulnerability Scan",
+      "OWASP Top 10 Scan",
+      "Source Code Security Scan",
+      "Dependency Scan",
+      "SSL Scan"
+    ],
+    "status": "Completed",
+    "progress": 100,
+    "start_time": "2026-09-30T09:56:14.949794Z",
+    "end_time": "2026-09-30T09:56:35.647737Z",
+    "duration_seconds": 20,
+    "total_vulnerabilities": 5,
+    "critical_count": 0,
+    "high_count": 0,
+    "medium_count": 0,
+    "low_count": 5,
+    "vulnerabilities": [
+      {
+        "title": "Target Web Service Unreachable",
+        "severity": "Info",
+        "cvss_score": 0.0,
+        "cve_id": "N/A",
+        "owasp_category": "N/A",
+        "mitre_attack": "N/A",
+        "description": "Could not establish an HTTP or HTTPS connection to 'https://demo.testfire.net'.",
+        "evidence": "HTTPSConnectionPool(host='demo.testfire.net', port=443): Max retries exceeded with url: / (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1082)')))",
+        "remediation": "Verify the target URL is correct, publicly reachable, and not blocked by a firewall.",
+        "id": "vuln-scan-8-1",
+        "affected_asset": "https://demo.testfire.net"
+      },
+      {
+        "title": "TLS/SSL Handshake Could Not Be Completed",
+        "severity": "Info",
+        "cvss_score": 0.0,
+        "cve_id": "N/A",
+        "owasp_category": "N/A",
+        "mitre_attack": "N/A",
+        "description": "A TLS connection to demo.testfire.net:443 could not be established, so certificate/protocol checks were skipped.",
+        "evidence": "[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1082)",
+        "remediation": "If this host should serve HTTPS, verify port 443 is open and a valid certificate is installed.",
+        "id": "vuln-scan-8-2",
+        "affected_asset": "https://demo.testfire.net"
+      },
+      {
+        "title": "Open Network Port Discovered: 80/tcp (HTTP)",
+        "severity": "Low",
+        "cvss_score": 3.1,
+        "cve_id": "N/A",
+        "owasp_category": "A05:2021-Security Misconfiguration",
+        "mitre_attack": "T1046 - Network Service Discovery",
+        "description": "Live TCP scan confirms port 80 (HTTP \u2014 Unencrypted web service) is open and accepting connections on demo.testfire.net (65.61.137.117). This is a lower-risk service but should still be reviewed if unexpected.",
+        "evidence": "TCP connect() to 65.61.137.117:80 succeeded (RESULT=0/OPEN).",
+        "remediation": "If HTTP on port 80 does not need to be publicly reachable, restrict it with a firewall/security group to trusted IP ranges only, and ensure strong authentication is enforced.",
+        "id": "vuln-scan-8-3",
+        "affected_asset": "https://demo.testfire.net"
+      },
+      {
+        "title": "Open Network Port Discovered: 443/tcp (HTTPS)",
+        "severity": "Low",
+        "cvss_score": 3.1,
+        "cve_id": "N/A",
+        "owasp_category": "A05:2021-Security Misconfiguration",
+        "mitre_attack": "T1046 - Network Service Discovery",
+        "description": "Live TCP scan confirms port 443 (HTTPS \u2014 Encrypted web service) is open and accepting connections on demo.testfire.net (65.61.137.117). This is a lower-risk service but should still be reviewed if unexpected.",
+        "evidence": "TCP connect() to 65.61.137.117:443 succeeded (RESULT=0/OPEN).",
+        "remediation": "If HTTPS on port 443 does not need to be publicly reachable, restrict it with a firewall/security group to trusted IP ranges only, and ensure strong authentication is enforced.",
+        "id": "vuln-scan-8-4",
+        "affected_asset": "https://demo.testfire.net"
+      },
+      {
+        "title": "Open Network Port Discovered: 8080/tcp (HTTP-Alt)",
+        "severity": "Low",
+        "cvss_score": 3.1,
+        "cve_id": "N/A",
+        "owasp_category": "A05:2021-Security Misconfiguration",
+        "mitre_attack": "T1046 - Network Service Discovery",
+        "description": "Live TCP scan confirms port 8080 (HTTP-Alt \u2014 Alternate / proxy web service) is open and accepting connections on demo.testfire.net (65.61.137.117). This is a lower-risk service but should still be reviewed if unexpected.",
+        "evidence": "TCP connect() to 65.61.137.117:8080 succeeded (RESULT=0/OPEN).",
+        "remediation": "If HTTP-Alt on port 8080 does not need to be publicly reachable, restrict it with a firewall/security group to trusted IP ranges only, and ensure strong authentication is enforced.",
+        "id": "vuln-scan-8-5",
+        "affected_asset": "https://demo.testfire.net"
+      }
+    ],
+    "ai_analysis": {
+      "overall_risk_score": 0.0,
+      "business_impact": "No security issues were identified on 'https://demo.testfire.net' during this scan. Keep up regular scanning to catch new risks early.",
+      "technical_impact": "Findings breakdown for this scan: 0 Critical, 0 High, 0 Medium, 0 Low. Exploitable vectors include network exposure, injection flaws, missing security headers/encryption, or leaked credentials, depending on the specific findings below.",
+      "likelihood": "Minimal \u2014 no exploitable weaknesses were found in this scan.",
+      "recommendations": [
+        "Re-run this scan after applying fixes to confirm the issues are resolved.",
+        "Review the detailed findings below with your technical/IT team for step-by-step fixes."
+      ],
+      "patch_priority": [
+        "No urgent patches required based on current findings."
+      ],
+      "executive_summary": "Automated security audit for 'https://demo.testfire.net' identified 5 total finding(s): 0 Critical, 0 High, 0 Medium, 0 Low. No urgent action is required, but continued monitoring is advised. [RESCAN AUDIT RESULTS]: 0 out of 0 initial vulnerability finding(s) were successfully resolved in this audit! 5 finding(s) remain."
+    },
+    "requested_by": "alex",
+    "logs": [
+      "[09:56:14] Scan request queued for target https://demo.testfire.net.",
+      "[09:56:14] Rescan audit initiated for previous scan 'scan-716b6171'.",
+      "[09:56:14] Starting SecureScan dynamic scan engine...",
+      "[09:56:14] Analyzing target fingerprint: https://demo.testfire.net",
+      "[09:56:15] Running live HTTP security header & configuration analysis...",
+      "[09:56:17] Performing live TLS/SSL certificate & protocol scan...",
+      "[09:56:18] Scanning for exposed network ports...",
+      "[09:56:35] Invoking AI Risk Analysis Engine for target 'https://demo.testfire.net'...",
+      "[09:56:35] Scan completed. Executive report is ready to view."
+    ],
+    "parent_scan_id": "scan-716b6171",
+    "remediation_diff": {
+      "parent_scan_id": "scan-716b6171",
+      "initial_count": 0,
+      "resolved_count": 0,
+      "remaining_count": 5,
+      "resolved_titles": []
+    }
+  },
+  "scan-cdd1aaad": {
+    "id": "scan-cdd1aaad",
+    "target": "https://www.vulnweb.com/",
+    "target_type": "Website URL",
+    "scan_types": [
+      "Full Vulnerability Scan",
+      "OWASP Top 10 Scan",
+      "Source Code Security Scan",
+      "Dependency Scan",
+      "SSL Scan"
+    ],
+    "status": "Running",
+    "progress": 65,
+    "start_time": "2026-09-30T10:14:29.120991Z",
+    "end_time": null,
+    "duration_seconds": 0,
+    "total_vulnerabilities": 0,
+    "critical_count": 0,
+    "high_count": 0,
+    "medium_count": 0,
+    "low_count": 0,
+    "vulnerabilities": [],
+    "ai_analysis": null,
+    "requested_by": "alex",
+    "logs": [
+      "[10:14:29] Scan request queued for target https://www.vulnweb.com/.",
+      "[10:14:29] Starting SecureScan dynamic scan engine...",
+      "[10:14:29] Analyzing target fingerprint: https://www.vulnweb.com/",
+      "[10:14:29] Running live HTTP security header & configuration analysis...",
+      "[10:14:35] Performing live TLS/SSL certificate & protocol scan...",
+      "[10:14:41] Scanning for exposed network ports..."
+    ]
+  },
+  "scan-81b1819e": {
+    "id": "scan-81b1819e",
+    "target": "https://www.vulnweb.com/",
+    "target_type": "Website URL",
+    "scan_types": [
+      "Full Vulnerability Scan",
+      "OWASP Top 10 Scan",
+      "Source Code Security Scan",
+      "Dependency Scan",
+      "SSL Scan"
+    ],
+    "status": "Completed",
+    "progress": 100,
+    "start_time": "2026-09-30T10:14:43.107443Z",
+    "end_time": "2026-09-30T10:15:14.108059Z",
+    "duration_seconds": 31,
+    "total_vulnerabilities": 3,
+    "critical_count": 0,
+    "high_count": 0,
+    "medium_count": 0,
+    "low_count": 3,
+    "vulnerabilities": [
+      {
+        "title": "Target Web Service Unreachable",
+        "severity": "Info",
+        "cvss_score": 0.0,
+        "cve_id": "N/A",
+        "owasp_category": "N/A",
+        "mitre_attack": "N/A",
+        "description": "Could not establish a connection to 'https://www.vulnweb.com/' to run web security checks.",
+        "evidence": "HTTPSConnectionPool(host='www.vulnweb.com', port=443): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<HTTPSConnection(host='www.vulnweb.com', port=443) at 0x244f109ed50>, 'Connection to www.vulnweb.com timed out. (connect timeout=6)'))",
+        "remediation": "Verify the target URL is correct, publicly reachable, and not blocked by a firewall.",
+        "id": "vuln-scan-8-1",
+        "affected_asset": "https://www.vulnweb.com/"
+      },
+      {
+        "title": "TLS/SSL Handshake Could Not Be Completed",
+        "severity": "Info",
+        "cvss_score": 0.0,
+        "cve_id": "N/A",
+        "owasp_category": "N/A",
+        "mitre_attack": "N/A",
+        "description": "A TLS connection to www.vulnweb.com:443 could not be established, so certificate/protocol checks were skipped.",
+        "evidence": "timed out",
+        "remediation": "If this host should serve HTTPS, verify port 443 is open and a valid certificate is installed.",
+        "id": "vuln-scan-8-2",
+        "affected_asset": "https://www.vulnweb.com/"
+      },
+      {
+        "title": "Live Port Scan Completed \u2014 No Common Ports Open",
+        "severity": "Info",
+        "cvss_score": 0.0,
+        "cve_id": "N/A",
+        "owasp_category": "A05:2021-Security Misconfiguration",
+        "mitre_attack": "T1046 - Network Service Discovery",
+        "description": "A live TCP scan of 21 common service ports against www.vulnweb.com (44.228.249.3) found none open. This is a good sign \u2014 it reduces the target's exposed attack surface.",
+        "evidence": "Scanned ports: 21, 22, 23, 25, 53, 80, 110, 135, 139, 143, 443, 445, 1433, 3306, 3389, 5432, 5900, 6379, 8080, 9200, 27017 \u2014 all closed/filtered.",
+        "remediation": "No action required. Continue to periodically re-scan as infrastructure changes.",
+        "id": "vuln-scan-8-3",
+        "affected_asset": "https://www.vulnweb.com/"
+      }
+    ],
+    "ai_analysis": {
+      "overall_risk_score": 0.0,
+      "business_impact": "No security issues were identified on 'https://www.vulnweb.com/' during this scan. Keep up regular scanning to catch new risks early.",
+      "technical_impact": "Findings breakdown for this scan: 0 Critical, 0 High, 0 Medium, 0 Low. Exploitable vectors include network exposure, injection flaws, missing security headers/encryption, or leaked credentials, depending on the specific findings below.",
+      "likelihood": "Minimal \u2014 no exploitable weaknesses were found in this scan.",
+      "recommendations": [
+        "Re-run this scan after applying fixes to confirm the issues are resolved.",
+        "Review the detailed findings below with your technical/IT team for step-by-step fixes."
+      ],
+      "patch_priority": [
+        "No urgent patches required based on current findings."
+      ],
+      "executive_summary": "Automated security audit for 'https://www.vulnweb.com/' identified 3 total finding(s): 0 Critical, 0 High, 0 Medium, 0 Low. No urgent action is required, but continued monitoring is advised."
+    },
+    "requested_by": "john",
+    "logs": [
+      "[10:14:43] Scan request queued for target https://www.vulnweb.com/.",
+      "[10:14:43] Starting SecureScan dynamic scan engine...",
+      "[10:14:43] Analyzing target fingerprint: https://www.vulnweb.com/",
+      "[10:14:43] Running live HTTP security header & configuration analysis...",
+      "[10:14:49] Performing live TLS/SSL certificate & protocol scan...",
+      "[10:14:55] Scanning for exposed network ports...",
+      "[10:15:14] Invoking AI Risk Analysis Engine for target 'https://www.vulnweb.com/'...",
+      "[10:15:14] Scan completed. Executive report is ready to view."
+    ]
+  },
+  "scan-813767dc": {
+    "id": "scan-813767dc",
+    "target": "https://demo.testfire.net",
+    "target_type": "Website URL",
+    "scan_types": [
+      "Full Vulnerability Scan",
+      "OWASP Top 10 Scan",
+      "Source Code Security Scan",
+      "Dependency Scan",
+      "SSL Scan"
+    ],
+    "status": "Completed",
+    "progress": 100,
+    "start_time": "2026-10-03T14:34:40.480188Z",
+    "end_time": "2026-10-03T14:35:01.827361Z",
+    "duration_seconds": 21,
+    "total_vulnerabilities": 5,
+    "critical_count": 0,
+    "high_count": 0,
+    "medium_count": 0,
+    "low_count": 5,
+    "vulnerabilities": [
+      {
+        "title": "Target Web Service Unreachable",
+        "severity": "Info",
+        "cvss_score": 0.0,
+        "cve_id": "N/A",
+        "owasp_category": "N/A",
+        "mitre_attack": "N/A",
+        "description": "Could not establish an HTTP or HTTPS connection to 'https://demo.testfire.net'.",
+        "evidence": "HTTPSConnectionPool(host='demo.testfire.net', port=443): Max retries exceeded with url: / (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1082)')))",
+        "remediation": "Verify the target URL is correct, publicly reachable, and not blocked by a firewall.",
+        "id": "vuln-scan-8-1",
+        "affected_asset": "https://demo.testfire.net"
+      },
+      {
+        "title": "TLS/SSL Handshake Could Not Be Completed",
+        "severity": "Info",
+        "cvss_score": 0.0,
+        "cve_id": "N/A",
+        "owasp_category": "N/A",
+        "mitre_attack": "N/A",
+        "description": "A TLS connection to demo.testfire.net:443 could not be established, so certificate/protocol checks were skipped.",
+        "evidence": "[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1082)",
+        "remediation": "If this host should serve HTTPS, verify port 443 is open and a valid certificate is installed.",
+        "id": "vuln-scan-8-2",
+        "affected_asset": "https://demo.testfire.net"
+      },
+      {
+        "title": "Open Network Port Discovered: 80/tcp (HTTP)",
+        "severity": "Low",
+        "cvss_score": 3.1,
+        "cve_id": "N/A",
+        "owasp_category": "A05:2021-Security Misconfiguration",
+        "mitre_attack": "T1046 - Network Service Discovery",
+        "description": "Live TCP scan confirms port 80 (HTTP \u2014 Unencrypted web service) is open and accepting connections on demo.testfire.net (65.61.137.117). This is a lower-risk service but should still be reviewed if unexpected.",
+        "evidence": "TCP connect() to 65.61.137.117:80 succeeded (RESULT=0/OPEN).",
+        "remediation": "If HTTP on port 80 does not need to be publicly reachable, restrict it with a firewall/security group to trusted IP ranges only, and ensure strong authentication is enforced.",
+        "id": "vuln-scan-8-3",
+        "affected_asset": "https://demo.testfire.net"
+      },
+      {
+        "title": "Open Network Port Discovered: 443/tcp (HTTPS)",
+        "severity": "Low",
+        "cvss_score": 3.1,
+        "cve_id": "N/A",
+        "owasp_category": "A05:2021-Security Misconfiguration",
+        "mitre_attack": "T1046 - Network Service Discovery",
+        "description": "Live TCP scan confirms port 443 (HTTPS \u2014 Encrypted web service) is open and accepting connections on demo.testfire.net (65.61.137.117). This is a lower-risk service but should still be reviewed if unexpected.",
+        "evidence": "TCP connect() to 65.61.137.117:443 succeeded (RESULT=0/OPEN).",
+        "remediation": "If HTTPS on port 443 does not need to be publicly reachable, restrict it with a firewall/security group to trusted IP ranges only, and ensure strong authentication is enforced.",
+        "id": "vuln-scan-8-4",
+        "affected_asset": "https://demo.testfire.net"
+      },
+      {
+        "title": "Open Network Port Discovered: 8080/tcp (HTTP-Alt)",
+        "severity": "Low",
+        "cvss_score": 3.1,
+        "cve_id": "N/A",
+        "owasp_category": "A05:2021-Security Misconfiguration",
+        "mitre_attack": "T1046 - Network Service Discovery",
+        "description": "Live TCP scan confirms port 8080 (HTTP-Alt \u2014 Alternate / proxy web service) is open and accepting connections on demo.testfire.net (65.61.137.117). This is a lower-risk service but should still be reviewed if unexpected.",
+        "evidence": "TCP connect() to 65.61.137.117:8080 succeeded (RESULT=0/OPEN).",
+        "remediation": "If HTTP-Alt on port 8080 does not need to be publicly reachable, restrict it with a firewall/security group to trusted IP ranges only, and ensure strong authentication is enforced.",
+        "id": "vuln-scan-8-5",
+        "affected_asset": "https://demo.testfire.net"
+      }
+    ],
+    "ai_analysis": {
+      "overall_risk_score": 0.0,
+      "business_impact": "No security issues were identified on 'https://demo.testfire.net' during this scan. Keep up regular scanning to catch new risks early.",
+      "technical_impact": "Findings breakdown for this scan: 0 Critical, 0 High, 0 Medium, 0 Low. Exploitable vectors include network exposure, injection flaws, missing security headers/encryption, or leaked credentials, depending on the specific findings below.",
+      "likelihood": "Minimal \u2014 no exploitable weaknesses were found in this scan.",
+      "recommendations": [
+        "Re-run this scan after applying fixes to confirm the issues are resolved.",
+        "Review the detailed findings below with your technical/IT team for step-by-step fixes."
+      ],
+      "patch_priority": [
+        "No urgent patches required based on current findings."
+      ],
+      "executive_summary": "Automated security audit for 'https://demo.testfire.net' identified 5 total finding(s): 0 Critical, 0 High, 0 Medium, 0 Low. No urgent action is required, but continued monitoring is advised."
+    },
+    "requested_by": "alex",
+    "logs": [
+      "[14:34:40] Scan request queued for target https://demo.testfire.net.",
+      "[14:34:40] Starting SecureScan dynamic scan engine...",
+      "[14:34:40] Analyzing target fingerprint: https://demo.testfire.net",
+      "[14:34:41] Running live HTTP security header & configuration analysis...",
+      "[14:34:43] Performing live TLS/SSL certificate & protocol scan...",
+      "[14:34:44] Scanning for exposed network ports...",
+      "[14:35:01] Invoking AI Risk Analysis Engine for target 'https://demo.testfire.net'...",
+      "[14:35:01] Scan completed. Executive report is ready to view."
+    ]
   }
 }

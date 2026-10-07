@@ -6,18 +6,17 @@ from backend.routers.auth import get_current_user, require_admin
 
 router = APIRouter(prefix="/assets", tags=["Asset Management"])
 
-ASSETS_DB = get_persisted_assets()
-
 
 @router.get("", response_model=List[AssetResponse])
 def list_assets(current_user: dict = Depends(get_current_user)):
-    return ASSETS_DB
+    return get_persisted_assets()
 
 
 @router.post("", response_model=AssetResponse)
 def create_asset(asset_in: AssetCreate, current_user: dict = Depends(get_current_user)):
+    assets_db = get_persisted_assets()
     new_asset = {
-        "id": f"ast-{len(ASSETS_DB) + 101}",
+        "id": f"ast-{len(assets_db) + 101}",
         "name": asset_in.name,
         "target": asset_in.target,
         "asset_type": asset_in.asset_type,
@@ -27,17 +26,17 @@ def create_asset(asset_in: AssetCreate, current_user: dict = Depends(get_current
         "status": "Active",
         "last_scanned": "Never"
     }
-    ASSETS_DB.append(new_asset)
-    save_persisted_assets(ASSETS_DB)
+    assets_db.append(new_asset)
+    save_persisted_assets(assets_db)
     return new_asset
 
 
 @router.delete("/{asset_id}")
 def delete_asset(asset_id: str, current_user: dict = Depends(require_admin)):
-    global ASSETS_DB
-    initial_len = len(ASSETS_DB)
-    ASSETS_DB = [a for a in ASSETS_DB if a.get("id") != asset_id]
-    if len(ASSETS_DB) == initial_len:
+    assets_db = get_persisted_assets()
+    initial_len = len(assets_db)
+    updated_assets = [a for a in assets_db if a.get("id") != asset_id]
+    if len(updated_assets) == initial_len:
         raise HTTPException(status_code=404, detail="Asset not found")
-    save_persisted_assets(ASSETS_DB)
+    save_persisted_assets(updated_assets)
     return {"message": f"Asset {asset_id} deleted successfully."}

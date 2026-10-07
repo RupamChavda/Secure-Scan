@@ -123,22 +123,26 @@ def generate_ai_analysis(target: str, vulns: List[dict]) -> AIRiskSummary:
 def execute_scan_job(scan_id: str):
     """
     Runs the actual dynamic scan pipeline for a queued scan job. Every scan
-    is evaluated live against its specific target — nothing here is a fixed
-    canned result; findings depend entirely on what is actually detected for
-    THIS target at THIS point in time.
+    is evaluated live against its specific target — findings depend entirely on what is
+    actually detected for THIS target at THIS point in time.
     """
-    scan = SCANS_DB.get(scan_id)
+    scans_db = get_persisted_scans()
+    scan = scans_db.get(scan_id)
     if not scan:
         return
 
     def log(msg: str):
-        scan["logs"].append(f"[{datetime.utcnow().strftime('%H:%M:%S')}] {msg}")
+        scan.setdefault("logs", []).append(f"[{datetime.utcnow().strftime('%H:%M:%S')}] {msg}")
+
+    def update_state():
+        scans_db[scan_id] = scan
+        save_persisted_scans(scans_db)
 
     scan["status"] = "Running"
-    log("Starting SecureScan AI dynamic scan engine...")
+    log("Starting SecureScan dynamic scan engine...")
     log(f"Analyzing target fingerprint: {scan['target']}")
     scan["progress"] = 10
-    save_persisted_scans(SCANS_DB)
+    update_state()
     time.sleep(0.5)
 
     target_str = str(scan["target"])
@@ -153,7 +157,7 @@ def execute_scan_job(scan_id: str):
         if is_zip_target:
             log("Running static source code analysis: secret detection & dependency CVE audit...")
             scan["progress"] = 30
-            save_persisted_scans(SCANS_DB)
+            update_state()
             archive_path = scan.get("_archive_path")
             if archive_path and os.path.exists(archive_path):
                 discovered_vulns.extend(run_static_code_scan(archive_path))
@@ -162,38 +166,38 @@ def execute_scan_job(scan_id: str):
         elif is_network_target:
             log("Executing live network port scan against target host...")
             scan["progress"] = 30
-            save_persisted_scans(SCANS_DB)
+            update_state()
             discovered_vulns.extend(run_live_port_scan(target_str))
             discovered_vulns.extend(run_nmap_scan(target_str))
 
             log("Checking for HTTPS/TLS service exposure...")
             scan["progress"] = 55
-            save_persisted_scans(SCANS_DB)
+            update_state()
             discovered_vulns.extend(run_ssl_scan(target_str))
 
         else:
             # Web URL / domain / generic target
             log("Running live HTTP security header & configuration analysis...")
             scan["progress"] = 30
-            save_persisted_scans(SCANS_DB)
+            update_state()
             discovered_vulns.extend(run_http_security_scan(target_str))
 
             log("Performing live TLS/SSL certificate & protocol scan...")
             scan["progress"] = 50
-            save_persisted_scans(SCANS_DB)
+            update_state()
             discovered_vulns.extend(run_ssl_scan(target_str))
 
             log("Scanning for exposed network ports...")
             scan["progress"] = 65
-            save_persisted_scans(SCANS_DB)
+            update_state()
             discovered_vulns.extend(run_live_port_scan(target_str))
 
             discovered_vulns.extend(run_owasp_zap_scan(target_str))
 
         scan["progress"] = 80
-        save_persisted_scans(SCANS_DB)
+        update_state()
 
-        # Optional deep-scan tool (only adds a finding if a live GVM daemon is reachable)
+        # Optional deep-scan tool
         discovered_vulns.extend(run_openvas_scan(target_str))
 
     except Exception as e:
@@ -224,8 +228,8 @@ def execute_scan_job(scan_id: str):
     ai_res = generate_ai_analysis(scan["target"], discovered_vulns).dict()
 
     # Calculate Remediation Diff if this scan is a rescan of a previous scan
-    if scan.get("parent_scan_id") and scan["parent_scan_id"] in SCANS_DB:
-        parent = SCANS_DB[scan["parent_scan_id"]]
+    if scan.get("parent_scan_id") and scan["parent_scan_id"] in scans_db:
+        parent = scans_db[scan["parent_scan_id"]]
         parent_vulns = parent.get("vulnerabilities", [])
         new_vuln_titles = set(v.get("title") for v in discovered_vulns)
         
@@ -242,14 +246,12 @@ def execute_scan_job(scan_id: str):
             "resolved_titles": [v.get("title") for v in resolved_vulns]
         }
         
-        # Append remediation summary note to AI executive summary
         ai_res["executive_summary"] += (
             f" [RESCAN AUDIT RESULTS]: {resolved_count} out of {initial_count} initial vulnerability finding(s) "
             f"were successfully resolved in this audit! {remaining_count} finding(s) remain."
         )
 
     scan["ai_analysis"] = ai_res
-
     scan["progress"] = 100
     scan["status"] = "Completed"
     scan["end_time"] = datetime.utcnow().isoformat() + "Z"
@@ -258,7 +260,8 @@ def execute_scan_job(scan_id: str):
     log("Scan completed. Executive report is ready to view.")
 
     scan.pop("_archive_path", None)
-    save_persisted_scans(SCANS_DB)
+    update_state()
+
 
 
 def _new_scan_record(scan_id: str, target: str, target_type, scan_types, requested_by: str, extra_logs=None) -> dict:
@@ -287,11 +290,12 @@ def _new_scan_record(scan_id: str, target: str, target_type, scan_types, request
 
 @router.post("", response_model=ScanResultResponse)
 def create_scan(scan_in: ScanCreate, background_tasks: BackgroundTasks, current_user: dict = Depends(get_current_user)):
+    scans_db = get_persisted_scans()
     scan_id = f"scan-{uuid.uuid4().hex[:8]}"
     scan_obj = _new_scan_record(scan_id, scan_in.target, scan_in.target_type, scan_in.scan_types, current_user["username"])
 
-    SCANS_DB[scan_id] = scan_obj
-    save_persisted_scans(SCANS_DB)  # persist immediately so it shows up in scan history right away
+    scans_db[scan_id] = scan_obj
+    save_persisted_scans(scans_db)  # persist immediately so it shows up in scan history right away
     background_tasks.add_task(execute_scan_job, scan_id)
     return scan_obj
 
@@ -302,6 +306,7 @@ async def upload_project_zip(
     file: UploadFile = File(...),
     current_user: dict = Depends(get_current_user)
 ):
+    scans_db = get_persisted_scans()
     valid_exts = (".zip", ".rar", ".7z", ".tar.gz", ".gz", ".tar")
     if not any(file.filename.lower().endswith(ext) for ext in valid_exts):
         raise HTTPException(status_code=400, detail="Only compressed project archives (.zip, .rar, .7z, .tar.gz) are supported")
@@ -321,10 +326,11 @@ async def upload_project_zip(
     )
     scan_obj["_archive_path"] = file_location
 
-    SCANS_DB[scan_id] = scan_obj
-    save_persisted_scans(SCANS_DB)
+    scans_db[scan_id] = scan_obj
+    save_persisted_scans(scans_db)
     background_tasks.add_task(execute_scan_job, scan_id)
     return scan_obj
+
 
 
 @router.get("", response_model=List[ScanResultResponse])

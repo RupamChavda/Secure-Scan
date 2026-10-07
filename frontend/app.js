@@ -159,9 +159,9 @@ function initGlobalSearch() {
         if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
             e.preventDefault();
             searchInput.focus();
-        } else if (e.altKey && e.key >= '1' && e.key <= '7') {
+        } else if (e.altKey && e.key >= '1' && e.key <= '8') {
             e.preventDefault();
-            const tabMap = ['dashboard', 'assets', 'new-scan', 'project-scanner', 'cve-db', 'ai-assistant', 'reports'];
+            const tabMap = ['dashboard', 'assets', 'new-scan', 'project-scanner', 'cve-db', 'ai-assistant', 'reports', 'wazuh'];
             const tabIndex = parseInt(e.key) - 1;
             if (tabMap[tabIndex]) switchTab(tabMap[tabIndex]);
         }
@@ -280,7 +280,8 @@ async function handleSignupSubmit(e) {
         CURRENT_USER = data.user;
         localStorage.setItem("securescan_token", AUTH_TOKEN);
         localStorage.setItem("securescan_user", JSON.stringify(CURRENT_USER));
-        showToast("Profile created successfully! Welcome to SecureScan AI.", "success");
+        showToast("Profile created successfully! Welcome to SecureScan.", "success");
+
         showApp();
     } catch (err) {
         if (errEl) { errEl.textContent = err.message; errEl.style.display = "block"; }
@@ -460,11 +461,16 @@ function switchTab(tabId) {
     if (activeNav) activeNav.classList.add("active");
     if (activeView) activeView.classList.add("active");
 
+    if (tabId === 'wazuh') {
+        loadWazuhDashboard();
+    }
+
     // Instantly scroll viewport back to top (0px) so header aligns right below topbar
     const viewport = document.querySelector(".content-viewport");
     if (viewport) viewport.scrollTop = 0;
     window.scrollTo(0, 0);
 }
+
 
 function getScanVulnerabilityCounts(s) {
     let crit = s.critical_count || 0;
@@ -536,10 +542,10 @@ function updateDashboardCharts(scans) {
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { labels: { color: '#9ca3af' } } },
+                plugins: { legend: { labels: { color: '#475569', font: { weight: '600' } } } },
                 scales: {
-                    x: { ticks: { color: '#9ca3af' }, grid: { color: 'rgba(255,255,255,0.05)' } },
-                    y: { ticks: { color: '#9ca3af', precision: 0 }, grid: { color: 'rgba(255,255,255,0.05)' }, beginAtZero: true, suggestedMax: maxVal }
+                    x: { ticks: { color: '#64748b' }, grid: { color: 'rgba(0,0,0,0.06)' } },
+                    y: { ticks: { color: '#64748b', precision: 0 }, grid: { color: 'rgba(0,0,0,0.06)' }, beginAtZero: true, suggestedMax: maxVal }
                 }
             }
         });
@@ -552,7 +558,7 @@ function updateDashboardCharts(scans) {
 
         const chartData = totalVulns > 0 ? [critCount, highCount, medCount, lowCount] : [0, 0, 0, 1];
         const chartLabels = totalVulns > 0 ? ['Critical', 'High', 'Medium', 'Low'] : ['Clean / No Risks'];
-        const chartColors = totalVulns > 0 ? ['#ff0844', '#f59e0b', '#00f2fe', '#8b5cf6'] : ['#10b981'];
+        const chartColors = totalVulns > 0 ? ['#e11d48', '#d97706', '#0284c7', '#7c3aed'] : ['#10b981'];
 
         severityChartInstance = new Chart(ctxSev, {
             type: 'doughnut',
@@ -567,10 +573,11 @@ function updateDashboardCharts(scans) {
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { position: 'bottom', labels: { color: '#9ca3af' } } }
+                plugins: { legend: { position: 'bottom', labels: { color: '#475569', font: { weight: '600' } } } }
             }
         });
     }
+
 }
 
 function initCharts() {
@@ -594,17 +601,27 @@ async function loadDashboardData() {
     }
 }
 
+let allLoadedProjects = [];
+
 function renderProjectsGrid(scans) {
+    allLoadedProjects = scans || [];
     const grid = document.getElementById("projects-cards-grid");
     const badge = document.getElementById("projects-count-badge");
+    const carouselNav = document.getElementById("projects-carousel-nav");
     if (!grid) return;
 
     grid.innerHTML = "";
-    if (badge) badge.innerText = `${scans.length} Projects`;
+    const totalCount = scans ? scans.length : 0;
+    if (badge) badge.innerText = `${totalCount} Projects`;
+
+    // Show carousel nav arrow controls if there are 4 or more projects
+    if (carouselNav) {
+        carouselNav.style.display = totalCount > 3 ? "flex" : "none";
+    }
 
     if (!scans || scans.length === 0) {
         grid.innerHTML = `
-            <div class="glass-panel" style="grid-column: 1 / -1; text-align:center; padding: 40px;">
+            <div class="glass-panel" style="width:100%; text-align:center; padding: 40px;">
                 <i class="fa-solid fa-folder-open text-cyan" style="font-size:36px; margin-bottom:14px;"></i>
                 <h3>No Security Projects Yet</h3>
                 <p style="color:#94a3b8; font-size:13px; margin-top:6px;">Create your first security audit project to start scanning your target application or IP.</p>
@@ -615,52 +632,147 @@ function renderProjectsGrid(scans) {
     }
 
     scans.forEach(scan => {
-        const card = document.createElement("div");
-        card.className = "project-card";
-        
-        const statusColor = scan.status === 'Completed' ? '#10b981' : (scan.status === 'Running' ? '#00f2fe' : '#f59e0b');
-        const score = scan.ai_analysis ? scan.ai_analysis.overall_risk_score : '0.0';
-        
-        let diffBadge = "";
-        if (scan.remediation_diff) {
-            const diff = scan.remediation_diff;
-            diffBadge = `<div style="margin-top:6px;"><span class="remediation-badge"><i class="fa-solid fa-shield-check"></i> ${diff.resolved_count} Fixed | ${diff.remaining_count} Remaining</span></div>`;
-        }
+        const card = createProjectCardElement(scan, false);
+        grid.appendChild(card);
+    });
 
-        card.innerHTML = `
+    // Append the "View All Projects" end card if there are more than 3 projects
+    if (scans.length > 3) {
+        const seeAllCard = document.createElement("div");
+        seeAllCard.className = "project-card see-all-card";
+        seeAllCard.onclick = () => openAllProjectsModal();
+        seeAllCard.innerHTML = `
             <div>
-                <div class="project-card-header">
-                    <div>
-                        <div class="project-card-title">${scan.target}</div>
-                        <div class="project-target-type"><i class="fa-solid fa-tag text-cyan"></i> ${scan.target_type}</div>
-                    </div>
-                    <span style="background:rgba(255,255,255,0.06); color:${statusColor}; border:1px solid ${statusColor}44; padding:3px 10px; border-radius:12px; font-size:11px; font-weight:700;">
-                        <i class="fa-solid ${scan.status === 'Running' ? 'fa-spinner fa-spin' : 'fa-circle'}"></i> ${scan.status}
-                    </span>
-                </div>
-
-                ${diffBadge}
-
-                <div class="project-stats-row">
-                    <div>
-                        <span style="font-size:11px; color:#94a3b8;">Vulnerabilities</span>
-                        <div style="font-size:14px; font-weight:700; color:#ef4444;">${scan.total_vulnerabilities || 0} Issues</div>
-                    </div>
-                    <div style="text-align:right;">
-                        <span style="font-size:11px; color:#94a3b8;">CVSS Risk Score</span>
-                        <div style="font-size:14px; font-weight:800; color:${parseFloat(score) > 5 ? '#ff477e' : '#10b981'};">${score} / 10</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="project-actions-row">
-                <button class="btn btn-sm btn-primary" onclick="openProjectDetails('${scan.id}')"><i class="fa-solid fa-eye"></i> View Status</button>
-                <button class="btn btn-sm btn-outline" onclick="rescanTarget('${scan.id}')" title="Live Rescan Project"><i class="fa-solid fa-rotate-right text-cyan"></i> Rescan</button>
+                <div class="see-all-icon"><i class="fa-solid fa-arrow-right"></i></div>
+                <div class="see-all-title">View All Projects</div>
+                <div class="see-all-sub">See all ${scans.length} projects in full grid</div>
             </div>
         `;
+        grid.appendChild(seeAllCard);
+    }
+}
+
+function createProjectCardElement(scan, isModal = false) {
+    const card = document.createElement("div");
+    card.className = "project-card";
+    
+    const statusColor = scan.status === 'Completed' ? '#059669' : (scan.status === 'Running' ? '#0284c7' : '#d97706');
+    const score = scan.ai_analysis ? scan.ai_analysis.overall_risk_score : '0.0';
+    
+    let diffBadge = "";
+    if (scan.remediation_diff) {
+        const diff = scan.remediation_diff;
+        diffBadge = `<div style="margin-top:6px;"><span class="remediation-badge" style="background:#ecfdf5; color:#047857; border:1px solid #a7f3d0; padding:2px 8px; border-radius:6px; font-size:11px; font-weight:700;"><i class="fa-solid fa-shield-check"></i> ${diff.resolved_count} Fixed | ${diff.remaining_count} Remaining</span></div>`;
+    }
+
+    const onViewDetails = isModal ? `closeAllProjectsModal(); openProjectDetails('${scan.id}');` : `openProjectDetails('${scan.id}');`;
+
+    card.innerHTML = `
+        <div>
+            <div class="project-card-header">
+                <div>
+                    <div class="project-card-title" style="color:#0f172a; font-weight:700;">${scan.target}</div>
+                    <div class="project-target-type" style="color:#0284c7; font-weight:600;"><i class="fa-solid fa-tag text-cyan"></i> ${scan.target_type}</div>
+                </div>
+                <span style="background:#f1f5f9; color:${statusColor}; border:1px solid ${statusColor}55; padding:3px 10px; border-radius:12px; font-size:11px; font-weight:700;">
+                    <i class="fa-solid ${scan.status === 'Running' ? 'fa-spinner fa-spin' : 'fa-circle'}"></i> ${scan.status}
+                </span>
+            </div>
+
+            ${diffBadge}
+
+            <div class="project-stats-row" style="background:#f8fafc; border:1px solid #e2e8f0;">
+                <div>
+                    <span style="font-size:11px; color:#64748b; font-weight:600;">Vulnerabilities</span>
+                    <div style="font-size:14px; font-weight:700; color:#e11d48;">${scan.total_vulnerabilities || 0} Issues</div>
+                </div>
+                <div style="text-align:right;">
+                    <span style="font-size:11px; color:#64748b; font-weight:600;">CVSS Risk Score</span>
+                    <div style="font-size:14px; font-weight:800; color:${parseFloat(score) > 5 ? '#e11d48' : '#059669'};">${score} / 10</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="project-actions-row">
+            <button class="btn btn-sm btn-primary" onclick="${onViewDetails}"><i class="fa-solid fa-eye"></i> View Status</button>
+            <button class="btn btn-sm btn-outline" onclick="rescanTarget('${scan.id}')" title="Live Rescan Project"><i class="fa-solid fa-rotate-right text-cyan"></i> Rescan</button>
+        </div>
+    `;
+    return card;
+}
+
+function scrollProjectsCarousel(direction) {
+    const grid = document.getElementById("projects-cards-grid");
+    if (!grid) return;
+    const scrollAmount = 340 * direction;
+    grid.scrollBy({ left: scrollAmount, behavior: "smooth" });
+}
+
+function openAllProjectsModal() {
+    const modal = document.getElementById("all-projects-modal");
+    const badge = document.getElementById("all-projects-modal-badge");
+    const searchInput = document.getElementById("all-projects-search-input");
+    
+    if (!modal) return;
+    if (badge) badge.innerText = `${allLoadedProjects.length} Projects`;
+    if (searchInput) searchInput.value = "";
+    
+    renderAllProjectsModalGrid(allLoadedProjects);
+    modal.style.display = "flex";
+    document.body.style.overflow = "hidden";
+
+    if (searchInput) {
+        setTimeout(() => searchInput.focus(), 100);
+    }
+}
+
+function closeAllProjectsModal() {
+    const modal = document.getElementById("all-projects-modal");
+    if (!modal) return;
+    modal.style.display = "none";
+    document.body.style.overflow = "";
+}
+
+function renderAllProjectsModalGrid(scansToRender) {
+    const grid = document.getElementById("all-projects-modal-grid");
+    if (!grid) return;
+    grid.innerHTML = "";
+
+    if (!scansToRender || scansToRender.length === 0) {
+        grid.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align:center; padding: 40px; color:#64748b;">
+                <i class="fa-solid fa-folder-open" style="font-size:32px; margin-bottom:10px; color:#cbd5e1;"></i>
+                <p>No projects match your search query.</p>
+            </div>
+        `;
+        return;
+    }
+
+    scansToRender.forEach(scan => {
+        const card = createProjectCardElement(scan, true);
         grid.appendChild(card);
     });
 }
+
+function filterAllProjectsModal(query) {
+    const cleanQuery = (query || "").toLowerCase().trim();
+    if (!cleanQuery) {
+        renderAllProjectsModalGrid(allLoadedProjects);
+        return;
+    }
+    const filtered = allLoadedProjects.filter(p => 
+        (p.target && p.target.toLowerCase().includes(cleanQuery)) ||
+        (p.target_type && p.target_type.toLowerCase().includes(cleanQuery)) ||
+        (p.status && p.status.toLowerCase().includes(cleanQuery))
+    );
+    renderAllProjectsModalGrid(filtered);
+}
+
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+        closeAllProjectsModal();
+    }
+});
 
 async function openProjectDetails(scanId) {
     try {
@@ -675,45 +787,46 @@ async function openProjectDetails(scanId) {
 
         if (heroCard) {
             const score = scan.ai_analysis ? scan.ai_analysis.overall_risk_score : '0.0';
-            const statusColor = scan.status === 'Completed' ? '#10b981' : '#f59e0b';
+            const statusColor = scan.status === 'Completed' ? '#059669' : '#d97706';
             
             heroCard.className = "glass-panel";
+            heroCard.style.cssText = "background:#ffffff; border:1px solid #e2e8f0; border-radius:16px; padding:24px; box-shadow:0 4px 20px rgba(0,0,0,0.04);";
             heroCard.innerHTML = `
                 <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px;">
                     <div>
-                        <div style="font-size:12px; color:#00f2fe; font-weight:700; letter-spacing:0.5px; text-transform:uppercase;">Project Status & Audit Overview</div>
-                        <h2 style="font-size:26px; font-weight:700; margin-top:4px;">${scan.target}</h2>
-                        <div style="font-size:12px; color:#94a3b8; margin-top:4px;">
-                            <span>Target Type: <strong>${scan.target_type}</strong></span> &bull; 
-                            <span>Created By: <strong>${scan.requested_by || 'user'}</strong></span> &bull; 
-                            <span>Last Audit: <strong>${(scan.start_time || "").slice(0, 10)}</strong></span>
+                        <div style="font-size:12px; color:#0284c7; font-weight:700; letter-spacing:0.5px; text-transform:uppercase;">Project Status & Audit Overview</div>
+                        <h2 style="font-size:26px; font-weight:700; margin-top:4px; color:#0f172a;">${scan.target}</h2>
+                        <div style="font-size:12px; color:#64748b; margin-top:4px;">
+                            <span>Target Type: <strong style="color:#0f172a;">${scan.target_type}</strong></span> &bull; 
+                            <span>Created By: <strong style="color:#0f172a;">${scan.requested_by || 'user'}</strong></span> &bull; 
+                            <span>Last Audit: <strong style="color:#0f172a;">${(scan.start_time || "").slice(0, 10)}</strong></span>
                         </div>
                     </div>
                     <div style="display:flex; gap:10px; align-items:center;">
-                        <span style="background:rgba(255,255,255,0.06); color:${statusColor}; border:1px solid ${statusColor}; padding:6px 14px; border-radius:20px; font-size:13px; font-weight:700;">
+                        <span style="background:#f1f5f9; color:${statusColor}; border:1px solid ${statusColor}55; padding:6px 14px; border-radius:20px; font-size:13px; font-weight:700;">
                             <i class="fa-solid ${scan.status === 'Running' ? 'fa-spinner fa-spin' : 'fa-shield-check'}"></i> ${scan.status}
                         </span>
-                        <button class="btn btn-primary" onclick="rescanTarget('${scan.id}')"><i class="fa-solid fa-rotate-right"></i> Rescan This Project</button>
+                        <button class="btn btn-primary" onclick="rescanTarget('${scan.id}')"><i class="fa-solid fa-rotate-right"></i> Rescan Project</button>
                         <button class="btn btn-outline" onclick="viewScanReport('${scan.id}')"><i class="fa-solid fa-file-pdf"></i> Report</button>
                     </div>
                 </div>
 
-                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:16px; margin-top:20px; padding-top:16px; border-top:1px solid rgba(255,255,255,0.08);">
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:16px; margin-top:20px; padding-top:16px; border-top:1px solid #e2e8f0;">
                     <div>
-                        <span style="font-size:12px; color:#94a3b8;">Total Vulnerabilities</span>
-                        <div style="font-size:22px; font-weight:700; color:#ef4444; margin-top:2px;">${scan.total_vulnerabilities || 0} Findings</div>
+                        <span style="font-size:12px; color:#64748b; font-weight:600;">Total Vulnerabilities</span>
+                        <div style="font-size:22px; font-weight:700; color:#e11d48; margin-top:2px;">${scan.total_vulnerabilities || 0} Findings</div>
                     </div>
                     <div>
-                        <span style="font-size:12px; color:#94a3b8;">Critical Severity</span>
-                        <div style="font-size:22px; font-weight:700; color:#ff477e; margin-top:2px;">${scan.critical_count || 0} Critical</div>
+                        <span style="font-size:12px; color:#64748b; font-weight:600;">Critical Severity</span>
+                        <div style="font-size:22px; font-weight:700; color:#dc2626; margin-top:2px;">${scan.critical_count || 0} Critical</div>
                     </div>
                     <div>
-                        <span style="font-size:12px; color:#94a3b8;">High & Medium Risks</span>
-                        <div style="font-size:22px; font-weight:700; color:#f59e0b; margin-top:2px;">${(scan.high_count || 0) + (scan.medium_count || 0)} Risks</div>
+                        <span style="font-size:12px; color:#64748b; font-weight:600;">High & Medium Risks</span>
+                        <div style="font-size:22px; font-weight:700; color:#d97706; margin-top:2px;">${(scan.high_count || 0) + (scan.medium_count || 0)} Risks</div>
                     </div>
                     <div>
-                        <span style="font-size:12px; color:#94a3b8;">Overall CVSS Risk Score</span>
-                        <div style="font-size:22px; font-weight:800; color:${parseFloat(score) > 5 ? '#ff477e' : '#10b981'}; margin-top:2px;">${score} / 10</div>
+                        <span style="font-size:12px; color:#64748b; font-weight:600;">Overall CVSS Risk Score</span>
+                        <div style="font-size:22px; font-weight:800; color:${parseFloat(score) > 5 ? '#e11d48' : '#059669'}; margin-top:2px;">${score} / 10</div>
                     </div>
                 </div>
             `;
@@ -726,10 +839,10 @@ async function openProjectDetails(scanId) {
                 banner.className = "remediation-hero-banner";
                 banner.innerHTML = `
                     <div style="display:flex; align-items:center; gap:14px;">
-                        <div style="font-size:32px; color:#34d399;"><i class="fa-solid fa-shield-circle-check"></i></div>
+                        <div style="font-size:32px; color:#059669;"><i class="fa-solid fa-shield-circle-check"></i></div>
                         <div>
-                            <h4 style="font-size:16px; font-weight:700; color:#34d399;">Target Live Rescan Comparison</h4>
-                            <p style="font-size:13px; color:#cbd5e1; margin-top:2px;">
+                            <h4 style="font-size:16px; font-weight:700; color:#047857;">Target Live Rescan Comparison</h4>
+                            <p style="font-size:13px; color:#334155; margin-top:2px;">
                                 <strong>${diff.resolved_count} Vulnerabilities Resolved!</strong> &bull; ${diff.remaining_count} remaining out of ${diff.initial_count} initial findings.
                             </p>
                         </div>
@@ -744,16 +857,16 @@ async function openProjectDetails(scanId) {
             tableBody.innerHTML = "";
             const vulns = scan.vulnerabilities || [];
             if (vulns.length === 0) {
-                tableBody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#9ca3af; padding:24px;">No vulnerabilities found on this target! Project is secure.</td></tr>`;
+                tableBody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#64748b; padding:24px;">No vulnerabilities found on this target! Project is secure.</td></tr>`;
             } else {
                 vulns.forEach(v => {
-                    const sevColor = v.severity === 'Critical' ? '#ff477e' : (v.severity === 'High' ? '#f59e0b' : '#00f2fe');
+                    const sevColor = v.severity === 'Critical' ? '#e11d48' : (v.severity === 'High' ? '#d97706' : '#0284c7');
                     const tr = document.createElement("tr");
                     tr.innerHTML = `
-                        <td><strong>${v.title}</strong><div style="font-size:11px; color:#94a3b8; margin-top:2px;">${v.description}</div></td>
-                        <td><span style="background:${sevColor}22; color:${sevColor}; border:1px solid ${sevColor}55; padding:3px 10px; border-radius:10px; font-size:11px; font-weight:700;">${v.severity}</span></td>
-                        <td><strong>${v.cvss_score}</strong></td>
-                        <td><code style="color:#00f2fe; font-size:12px;">${v.remediation}</code></td>
+                        <td><strong style="color:#0f172a;">${v.title}</strong><div style="font-size:11px; color:#64748b; margin-top:2px;">${v.description}</div></td>
+                        <td><span style="background:${sevColor}15; color:${sevColor}; border:1px solid ${sevColor}44; padding:3px 10px; border-radius:10px; font-size:11px; font-weight:700;">${v.severity}</span></td>
+                        <td><strong style="color:#0f172a;">${v.cvss_score}</strong></td>
+                        <td><code style="color:#0284c7; font-size:12px; font-weight:600;">${v.remediation}</code></td>
                     `;
                     tableBody.appendChild(tr);
                 });
@@ -764,6 +877,7 @@ async function openProjectDetails(scanId) {
         showToast(`Error opening project details: ${err.message}`, "error");
     }
 }
+
 
 function updateDashboardStats(scans) {
     const totalScans = scans.length;
@@ -802,36 +916,36 @@ function renderScanPipeline(scans) {
     tableBody.innerHTML = "";
 
     if (scans.length === 0) {
-        tableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#9ca3af; padding:24px;">No scans found matching scope filter. Launch a scan above.</td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#64748b; padding:24px;">No scans found matching scope filter. Launch a scan above.</td></tr>`;
         return;
     }
 
     scans.forEach(scan => {
         const tr = document.createElement("tr");
-        const statusColor = scan.status === 'Completed' ? '#10b981' : (scan.status === 'Running' ? '#00f2fe' : '#f59e0b');
+        const statusColor = scan.status === 'Completed' ? '#059669' : (scan.status === 'Running' ? '#0284c7' : '#d97706');
         
         let diffBadge = "";
         if (scan.remediation_diff) {
             const diff = scan.remediation_diff;
-            diffBadge = `<div style="margin-top:4px;"><span class="remediation-badge"><i class="fa-solid fa-shield-check"></i> ${diff.resolved_count} Resolved | ${diff.remaining_count} Remaining</span></div>`;
+            diffBadge = `<div style="margin-top:4px;"><span class="remediation-badge" style="background:#ecfdf5; color:#047857; border:1px solid #a7f3d0; padding:2px 8px; border-radius:6px; font-size:11px; font-weight:700;"><i class="fa-solid fa-shield-check"></i> ${diff.resolved_count} Resolved | ${diff.remaining_count} Remaining</span></div>`;
         }
 
         tr.innerHTML = `
             <td>
-                <strong>${scan.target}</strong>
-                <div style="font-size:11px; color:#94a3b8;">User: ${scan.requested_by || 'user'}</div>
+                <strong style="color:#0f172a;">${scan.target}</strong>
+                <div style="font-size:11px; color:#64748b;">User: ${scan.requested_by || 'user'}</div>
                 ${diffBadge}
             </td>
-            <td><span class="badge-ai" style="background:#1e293b; color:#38bdf8;">${(scan.scan_types || []).join(", ")}</span></td>
+            <td><span class="badge-ai" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; font-weight:600;">${(scan.scan_types || []).join(", ")}</span></td>
             <td><span style="color:${statusColor}; font-weight:600;"><i class="fa-solid ${scan.status === 'Running' ? 'fa-spinner fa-spin' : 'fa-check'}"></i> ${scan.status}</span></td>
             <td style="width: 150px;">
-                <div class="progress-bar-wrap">
-                    <div class="progress-bar-fill" style="width: ${scan.progress}%;"></div>
+                <div class="progress-bar-wrap" style="background:#e2e8f0; height:8px; border-radius:4px; overflow:hidden;">
+                    <div class="progress-bar-fill" style="width: ${scan.progress}%; background:#0284c7; height:100%;"></div>
                 </div>
             </td>
             <td>
-                <span style="color:#ef4444; font-weight:600;">${scan.critical_count || 0} Critical</span> | 
-                <span style="color:#f97316;">${scan.high_count || 0} High</span>
+                <span style="color:#e11d48; font-weight:700;">${scan.critical_count || 0} Critical</span> | 
+                <span style="color:#d97706; font-weight:600;">${scan.high_count || 0} High</span>
             </td>
             <td>
                 <button class="btn btn-sm btn-primary" onclick="openProjectDetails('${scan.id}')" title="View Project Status"><i class="fa-solid fa-eye"></i> Details</button>
@@ -863,7 +977,7 @@ async function loadReportsData(scansList = null) {
     const completedScans = (scans || []).filter(s => s.status === "Completed" || s.progress > 0);
 
     if (completedScans.length === 0) {
-        tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#9ca3af; padding:24px;">No completed scan reports found. Run a scan to view generated reports.</td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#64748b; padding:24px;">No completed scan reports found. Run a scan to view generated reports.</td></tr>`;
         return;
     }
 
@@ -876,18 +990,18 @@ async function loadReportsData(scansList = null) {
         let diffBadge = "";
         if (scan.remediation_diff) {
             const diff = scan.remediation_diff;
-            diffBadge = `<div style="margin-top:4px;"><span class="remediation-badge"><i class="fa-solid fa-shield-check"></i> ${diff.resolved_count} Fixed | ${diff.remaining_count} Left</span></div>`;
+            diffBadge = `<div style="margin-top:4px;"><span class="remediation-badge" style="background:#ecfdf5; color:#047857; border:1px solid #a7f3d0; padding:2px 8px; border-radius:6px; font-size:11px; font-weight:700;"><i class="fa-solid fa-shield-check"></i> ${diff.resolved_count} Fixed | ${diff.remaining_count} Left</span></div>`;
         }
 
         tr.innerHTML = `
             <td>
-                <strong>Security Audit Report - ${scan.id}</strong>
-                <div style="font-size:11px; color:#94a3b8; margin-top:2px;">Run by ${scan.requested_by || 'user'} on ${scanDate}</div>
+                <strong style="color:#0f172a;">Security Audit Report - ${scan.id}</strong>
+                <div style="font-size:11px; color:#64748b; margin-top:2px;">Run by ${scan.requested_by || 'user'} on ${scanDate}</div>
                 ${diffBadge}
             </td>
-            <td>${scan.target}</td>
-            <td>${scan.total_vulnerabilities || 0} Findings (${scan.critical_count || 0} Critical)</td>
-            <td><span style="color:#ef4444; font-weight:600;">Risk Score: ${riskScore} / 10</span></td>
+            <td><span style="color:#334155; font-weight:600;">${scan.target}</span></td>
+            <td><span style="color:#0f172a;">${scan.total_vulnerabilities || 0} Findings</span> (<span style="color:#e11d48; font-weight:700;">${scan.critical_count || 0} Critical</span>)</td>
+            <td><span style="color:#e11d48; font-weight:700;">Risk Score: ${riskScore} / 10</span></td>
             <td>
                 <a href="${API_BASE}/reports/${scan.id}/pdf?token=${tokenParam}" target="_blank" class="btn btn-sm btn-primary"><i class="fa-solid fa-file-pdf"></i> Executive Report</a>
                 <a href="${API_BASE}/reports/${scan.id}/html?token=${tokenParam}" target="_blank" class="btn btn-sm btn-outline"><i class="fa-solid fa-file-code"></i> HTML</a>
@@ -897,6 +1011,7 @@ async function loadReportsData(scansList = null) {
         tableBody.appendChild(tr);
     });
 }
+
 
 async function rescanTarget(scanId) {
     try {
@@ -985,7 +1100,7 @@ async function loadAssetsData() {
         const assets = await res.json();
 
         if (!assets || assets.length === 0) {
-            tableBody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#9ca3af; padding:24px;">No assets registered. Click 'Register New Asset' to create one.</td></tr>`;
+            tableBody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#64748b; padding:24px;">No assets registered. Click 'Register New Asset' to create one.</td></tr>`;
             return;
         }
 
@@ -993,14 +1108,14 @@ async function loadAssetsData() {
         assets.forEach(ast => {
             const tr = document.createElement("tr");
             tr.innerHTML = `
-                <td><code style="color:#38bdf8;">${ast.id}</code></td>
-                <td><strong>${ast.name}</strong></td>
-                <td>${ast.target}</td>
-                <td><span style="background:rgba(0, 242, 254, 0.1); color:#00f2fe; padding:3px 10px; border-radius:6px; font-size:12px; border: 1px solid rgba(0, 242, 254, 0.25);">${ast.asset_type}</span></td>
-                <td>${ast.department || 'Engineering'}</td>
-                <td><span style="color:#10b981; font-weight:600;"><i class="fa-solid fa-circle-check"></i> ${ast.status || 'Active'}</span></td>
+                <td><code style="color:#0284c7; font-weight:700;">${ast.id}</code></td>
+                <td><strong style="color:#0f172a;">${ast.name}</strong></td>
+                <td><span style="color:#475569;">${ast.target}</span></td>
+                <td><span style="background:#e0f2fe; color:#0369a1; padding:3px 10px; border-radius:6px; font-size:12px; border: 1px solid #7dd3fc; font-weight:600;">${ast.asset_type}</span></td>
+                <td><span style="color:#475569;">${ast.department || 'Engineering'}</span></td>
+                <td><span style="color:#059669; font-weight:600;"><i class="fa-solid fa-circle-check"></i> ${ast.status || 'Active'}</span></td>
                 <td>
-                    <button class="btn btn-sm btn-danger" style="background:#ef4444; color:white; border:none; padding:5px 10px; border-radius:6px; cursor:pointer;" onclick="deleteAsset('${ast.id}')"><i class="fa-solid fa-trash"></i> Delete</button>
+                    <button class="btn btn-sm btn-danger" style="background:#e11d48; color:white; border:none; padding:5px 10px; border-radius:6px; cursor:pointer;" onclick="deleteAsset('${ast.id}')"><i class="fa-solid fa-trash"></i> Delete</button>
                 </td>
             `;
             tableBody.appendChild(tr);
@@ -1099,29 +1214,29 @@ async function loadCveCatalog(query = "") {
         const cves = await res.json();
 
         if (!cves || cves.length === 0) {
-            listContainer.innerHTML = `<div style="text-align:center; color:#9ca3af; padding:30px;">No CVE entries found matching query '${query}'.</div>`;
+            listContainer.innerHTML = `<div style="text-align:center; color:#64748b; padding:30px;">No CVE entries found matching query '${query}'.</div>`;
             return;
         }
 
         listContainer.innerHTML = "";
         cves.forEach(c => {
-            const sevColor = c.severity === 'Critical' ? '#ff477e' : (c.severity === 'High' ? '#f59e0b' : '#00f2fe');
+            const sevColor = c.severity === 'Critical' ? '#e11d48' : (c.severity === 'High' ? '#d97706' : '#0284c7');
             const card = document.createElement("div");
             card.className = "cve-item-card glass-panel";
-            card.style.cssText = "padding:20px; margin-bottom:15px; border-left:4px solid " + sevColor + "; border-radius:10px;";
+            card.style.cssText = "padding:20px; margin-bottom:15px; border-left:5px solid " + sevColor + "; border-radius:12px; background:#ffffff; border:1px solid #e2e8f0; box-shadow:0 4px 15px rgba(0,0,0,0.03);";
             card.innerHTML = `
                 <div class="cve-header" style="display:flex; justify-content:space-between; align-items:center;">
-                    <div class="cve-title" style="font-size:16px; font-weight:700; color:#f8fafc;">
-                        <code style="color:#00f2fe; background:rgba(0,242,254,0.1); padding:2px 6px; border-radius:4px;">${c.cve_id}</code> - ${c.title}
+                    <div class="cve-title" style="font-size:16px; font-weight:700; color:#0f172a;">
+                        <code style="color:#0284c7; background:#e0f2fe; border:1px solid #bae6fd; padding:3px 8px; border-radius:6px; font-weight:700;">${c.cve_id}</code> &nbsp; <span style="color:#0f172a;">${c.title}</span>
                     </div>
                     <div>
-                        <span style="background:${sevColor}; color:#040914; font-size:11px; font-weight:800; padding:4px 10px; border-radius:12px; text-transform:uppercase;">${c.severity} ${c.cvss_score}</span>
-                        <button class="btn btn-sm btn-danger" style="background:#ef4444; color:white; border:none; padding:4px 8px; border-radius:6px; margin-left:10px; cursor:pointer;" onclick="deleteCve('${c.cve_id}')"><i class="fa-solid fa-trash"></i></button>
+                        <span style="background:${sevColor}; color:#ffffff; font-size:11px; font-weight:800; padding:4px 10px; border-radius:12px; text-transform:uppercase; box-shadow:0 2px 8px rgba(0,0,0,0.1);">${c.severity} ${c.cvss_score}</span>
+                        <button class="btn btn-sm btn-danger" style="background:#e11d48; color:white; border:none; padding:5px 10px; border-radius:6px; margin-left:10px; cursor:pointer;" onclick="deleteCve('${c.cve_id}')"><i class="fa-solid fa-trash"></i> Delete</button>
                     </div>
                 </div>
-                <p style="font-size:13px; color:#cbd5e1; margin-top:10px; line-height:1.5;">${c.summary}</p>
-                <div style="font-size:12px; color:#94a3b8; margin-top:10px;">
-                    <strong>Affected:</strong> ${(c.affected_products || []).join(", ")} &nbsp;|&nbsp; <strong>Published:</strong> ${c.published_date || 'N/A'}
+                <p style="font-size:13.5px; color:#334155; margin-top:12px; line-height:1.5; font-weight:500;">${c.summary}</p>
+                <div style="font-size:12px; color:#64748b; margin-top:12px; padding-top:10px; border-top:1px solid #f1f5f9;">
+                    <strong style="color:#475569;">Affected:</strong> ${(c.affected_products || []).join(", ")} &nbsp;|&nbsp; <strong style="color:#475569;">Published:</strong> ${c.published_date || 'N/A'}
                 </div>
             `;
             listContainer.appendChild(card);
@@ -1130,6 +1245,7 @@ async function loadCveCatalog(query = "") {
         console.log("Error loading CVE catalog:", e);
     }
 }
+
 
 function toggleAddCveForm() {
     const panel = document.getElementById("add-cve-form-panel");
@@ -1314,3 +1430,295 @@ function clearSelectedSastFile() {
     if (fileInput) fileInput.value = "";
     if (previewCard) previewCard.style.display = "none";
 }
+
+// ============================================================================
+// WAZUH SIEM & XDR INTEGRATION MODULE
+// ============================================================================
+
+let wazuhAlertsCache = [];
+
+function toggleWazuhSettings() {
+    const configCard = document.getElementById("wazuh-config-card");
+    if (!configCard) return;
+    if (configCard.style.display === "none" || !configCard.style.display) {
+        configCard.style.display = "block";
+        loadWazuhSettingsForm();
+    } else {
+        configCard.style.display = "none";
+    }
+}
+
+async function loadWazuhSettingsForm() {
+    try {
+        const res = await authFetch(`${API_BASE}/wazuh/config`);
+        if (!res.ok) return;
+        const config = await res.json();
+        
+        const hostEl = document.getElementById("wazuh-cfg-host");
+        const portEl = document.getElementById("wazuh-cfg-port");
+        const userEl = document.getElementById("wazuh-cfg-user");
+        const passEl = document.getElementById("wazuh-cfg-pass");
+        const sslEl = document.getElementById("wazuh-cfg-ssl");
+        const mockEl = document.getElementById("wazuh-cfg-mock");
+
+        if (hostEl) hostEl.value = config.host || "192.168.1.100";
+        if (portEl) portEl.value = config.port || 55000;
+        if (userEl) userEl.value = config.user || "wazuh";
+        if (passEl) passEl.value = config.password_masked || "••••••••";
+        if (sslEl) sslEl.checked = !!config.verify_ssl;
+        if (mockEl) mockEl.checked = config.use_mock_fallback !== false;
+    } catch (e) {
+        console.error("Failed to load Wazuh settings form:", e);
+    }
+}
+
+async function saveWazuhSettings(e) {
+    e.preventDefault();
+    const btn = document.getElementById("btn-save-wazuh-cfg");
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...'; }
+
+    const payload = {
+        host: document.getElementById("wazuh-cfg-host").value.trim(),
+        port: parseInt(document.getElementById("wazuh-cfg-port").value) || 55000,
+        user: document.getElementById("wazuh-cfg-user").value.trim(),
+        password: document.getElementById("wazuh-cfg-pass").value,
+        verify_ssl: document.getElementById("wazuh-cfg-ssl").checked,
+        use_mock_fallback: document.getElementById("wazuh-cfg-mock").checked,
+        enabled: true
+    };
+
+    try {
+        const res = await authFetch(`${API_BASE}/wazuh/config`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.detail || "Failed to save configuration.");
+        }
+
+        showToast("Wazuh configuration saved successfully!", "success");
+        document.getElementById("wazuh-config-card").style.display = "none";
+        await loadWazuhDashboard();
+    } catch (err) {
+        showToast(`Configuration Error: ${err.message}`, "error");
+    } finally {
+        if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save & Test Wazuh Connection'; }
+    }
+}
+
+async function loadWazuhDashboard() {
+    const syncedEl = document.getElementById("wazuh-last-synced");
+    if (syncedEl) syncedEl.textContent = new Date().toLocaleTimeString();
+
+    try {
+        // 1. Fetch Manager Status
+        const statusRes = await authFetch(`${API_BASE}/wazuh/status`);
+        if (statusRes.ok) {
+            const statusData = await statusRes.json();
+            updateWazuhStatusHeader(statusData);
+        }
+
+        // 2. Fetch Monitored Agents
+        const agentsRes = await authFetch(`${API_BASE}/wazuh/agents`);
+        if (agentsRes.ok) {
+            const agentsData = await agentsRes.json();
+            renderWazuhAgents(agentsData);
+        }
+
+        // 3. Fetch Alerts
+        const alertsRes = await authFetch(`${API_BASE}/wazuh/alerts`);
+        if (alertsRes.ok) {
+            const alertsData = await alertsRes.json();
+            wazuhAlertsCache = alertsData.alerts || [];
+            renderWazuhAlerts(wazuhAlertsCache);
+        }
+    } catch (err) {
+        console.error("Error loading Wazuh dashboard:", err);
+        showToast("Could not sync Wazuh data. Check VM connectivity.", "warning");
+    }
+}
+
+function updateWazuhStatusHeader(data) {
+    const badgeEl = document.getElementById("wazuh-status-badge");
+    const modeBadge = document.getElementById("wazuh-mode-badge");
+    const targetEl = document.getElementById("wazuh-target-display");
+    const clusterEl = document.getElementById("wazuh-cluster-display");
+    const errBanner = document.getElementById("wazuh-error-banner");
+    const errText = document.getElementById("wazuh-error-text");
+    const versionMetric = document.getElementById("wazuh-metric-version");
+    const nodeMetric = document.getElementById("wazuh-metric-node");
+    const iconBox = document.getElementById("wazuh-status-icon-container");
+
+    if (targetEl) targetEl.textContent = `https://${data.wazuh_host || '192.168.1.100'}:55000`;
+    
+    if (data.connected && !data.is_mock) {
+        if (badgeEl) badgeEl.innerHTML = `<i class="fa-solid fa-circle text-emerald"></i> Connected & Online`;
+        if (badgeEl) badgeEl.className = "badge badge-success";
+        if (modeBadge) modeBadge.style.display = "none";
+        if (errBanner) errBanner.style.display = "none";
+        if (iconBox) { iconBox.style.background = "rgba(16, 185, 129, 0.15)"; iconBox.style.color = "#10b981"; }
+    } else if (data.is_mock) {
+        if (badgeEl) badgeEl.innerHTML = `<i class="fa-solid fa-flask text-cyan"></i> Demo Mode (VM Offline)`;
+        if (badgeEl) badgeEl.className = "badge badge-info";
+        if (modeBadge) modeBadge.style.display = "inline-block";
+        if (errBanner) {
+            errBanner.style.display = "flex";
+            if (errText) errText.textContent = data.error_message || `VM unreachable at https://${data.wazuh_host}:55000. Displaying simulated telemetry.`;
+        }
+        if (iconBox) { iconBox.style.background = "rgba(6, 182, 212, 0.15)"; iconBox.style.color = "#06b6d4"; }
+    } else {
+        if (badgeEl) badgeEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-rose"></i> Disconnected`;
+        if (badgeEl) badgeEl.className = "badge badge-danger";
+        if (modeBadge) modeBadge.style.display = "none";
+        if (errBanner) {
+            errBanner.style.display = "flex";
+            if (errText) errText.textContent = data.error_message || "Cannot establish REST connection to Wazuh VM.";
+        }
+        if (iconBox) { iconBox.style.background = "rgba(244, 63, 94, 0.15)"; iconBox.style.color = "#f43f5e"; }
+    }
+
+    if (data.manager_info) {
+        if (versionMetric) versionMetric.textContent = data.manager_info.version || "v4.7.2";
+        if (nodeMetric) nodeMetric.textContent = `Node: ${data.manager_info.node_name || 'wazuh-master'}`;
+        if (clusterEl) clusterEl.textContent = data.manager_info.cluster_name || "wazuh-cluster";
+    }
+}
+
+function renderWazuhAgents(data) {
+    const tbody = document.getElementById("wazuh-agents-table-body");
+    const activeMetric = document.getElementById("wazuh-metric-active-agents");
+    const totalMetric = document.getElementById("wazuh-metric-total-agents");
+    const countPill = document.getElementById("wazuh-agents-count");
+
+    const summary = data.agents_summary || {};
+    if (activeMetric) activeMetric.textContent = `${summary.active || 0} / ${summary.total || 0}`;
+    if (totalMetric) totalMetric.textContent = `Total Agents Registered: ${summary.total || 0}`;
+    if (countPill) countPill.textContent = `${summary.total || 0} Agents`;
+
+    if (!tbody) return;
+    const agents = data.agents || [];
+
+    if (agents.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:20px; color:#94a3b8;">No Wazuh Agents registered yet. Install a Wazuh Agent on your target machines to monitor telemetry.</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = agents.map(agent => {
+        const isOnline = agent.status === "active";
+        const statusPill = isOnline 
+            ? `<span class="badge badge-success"><i class="fa-solid fa-circle text-emerald"></i> Active</span>`
+            : `<span class="badge badge-danger"><i class="fa-solid fa-circle text-rose"></i> Disconnected</span>`;
+        
+        const osName = (agent.os && (agent.os.name || agent.os.os)) ? `${agent.os.name || agent.os.os} ${agent.os.version || ''}` : "Unknown OS";
+
+        return `
+            <tr>
+                <td>
+                    <strong><i class="fa-solid fa-laptop-code text-cyan"></i> ${agent.name}</strong>
+                    <div style="font-size:0.75rem; color:#64748b;">ID: ${agent.id}</div>
+                </td>
+                <td><code>${agent.ip}</code></td>
+                <td style="font-size:0.85rem;">${osName}</td>
+                <td><span class="badge badge-secondary">${agent.version}</span></td>
+                <td>${statusPill}</td>
+                <td style="font-size:0.82rem; color:#94a3b8;">${agent.lastKeepAlive || 'N/A'}</td>
+                <td>
+                    <button class="btn btn-secondary btn-sm" onclick="triggerWazuhAgentScan('${agent.id}')" title="Trigger file integrity & syscheck scan on agent">
+                        <i class="fa-solid fa-radar text-amber"></i> Run Syscheck
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+function renderWazuhAlerts(alerts) {
+    const container = document.getElementById("wazuh-alerts-feed-container");
+    const alertMetric = document.getElementById("wazuh-metric-alerts");
+    if (!container) return;
+
+    if (alertMetric) alertMetric.textContent = wazuhAlertsCache.length;
+
+    if (alerts.length === 0) {
+        const selFilter = document.getElementById("wazuh-alert-severity-filter")?.value || "all";
+        container.innerHTML = `
+            <div style="text-align:center; padding:24px; color:#94a3b8; background:rgba(15, 23, 42, 0.4); border-radius:12px;">
+                <i class="fa-solid fa-filter-circle-xmark text-cyan" style="font-size:2.2rem; margin-bottom:10px;"></i><br>
+                <strong style="color:#f8fafc; font-size:1rem;">No log events match severity filter '${selFilter.toUpperCase()}'.</strong>
+                <p style="font-size:0.85rem; margin-top:6px; color:#64748b;">
+                    Total log events fetched: <strong>${wazuhAlertsCache.length}</strong>. Most active events are Level 3 (Info / Low). Try selecting 'All Alert Levels' or 'Low / Info (Level 1-3)'.
+                </p>
+            </div>`;
+        return;
+    }
+
+    container.innerHTML = alerts.map(alt => {
+        let sevClass = "border-cyan";
+        let badgeColor = "badge-info";
+        if (alt.level >= 12 || String(alt.severity).toLowerCase() === "critical") {
+            sevClass = "border-rose";
+            badgeColor = "badge-danger";
+        } else if (alt.level >= 7 || String(alt.severity).toLowerCase() === "high") {
+            sevClass = "border-amber";
+            badgeColor = "badge-warning";
+        }
+
+        const dateStr = alt.timestamp ? new Date(alt.timestamp).toLocaleString() : "Just now";
+
+        return `
+            <div class="glass-panel ${sevClass}" style="padding:14px; border-left:4px solid; display:flex; flex-direction:column; gap:6px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <span class="badge ${badgeColor}">Rule ${alt.rule_id}</span>
+                        <span class="badge badge-secondary">Level ${alt.level}</span>
+                        <strong style="font-size:0.95rem; color:#f8fafc;">${alt.description}</strong>
+                    </div>
+                    <span style="font-size:0.78rem; color:#64748b;"><i class="fa-regular fa-clock"></i> ${dateStr}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; font-size:0.83rem; color:#94a3b8; margin-top:4px;">
+                    <div>
+                        <i class="fa-solid fa-desktop text-cyan"></i> Agent: <strong>${alt.agent_name}</strong> (${alt.agent_ip}) &bull; Location: <code>${alt.location}</code>
+                    </div>
+                    ${alt.mitre_attack !== 'N/A' ? `<span class="badge badge-outline" style="color:#00f2fe; border-color:rgba(0,242,254,0.3);"><i class="fa-solid fa-crosshairs"></i> ${alt.mitre_attack}</span>` : ''}
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function filterWazuhAlerts() {
+    const filterVal = document.getElementById("wazuh-alert-severity-filter")?.value || "all";
+    let filtered = [...wazuhAlertsCache];
+
+    if (filterVal === "critical") {
+        filtered = filtered.filter(a => a.level >= 12 || String(a.severity).toLowerCase() === "critical");
+    } else if (filterVal === "high") {
+        filtered = filtered.filter(a => (a.level >= 7 && a.level < 12) || String(a.severity).toLowerCase() === "high");
+    } else if (filterVal === "medium") {
+        filtered = filtered.filter(a => (a.level >= 4 && a.level < 7) || String(a.severity).toLowerCase() === "medium");
+    } else if (filterVal === "low") {
+        filtered = filtered.filter(a => a.level < 4 || String(a.severity).toLowerCase() === "low" || String(a.severity).toLowerCase() === "info");
+    }
+
+    renderWazuhAlerts(filtered);
+}
+
+
+async function triggerWazuhAgentScan(agentId) {
+    try {
+        showToast(`Sending active syscheck scan command to Wazuh Agent '${agentId}'...`, "info");
+        const res = await authFetch(`${API_BASE}/wazuh/agents/${agentId}/scan`, { method: "POST" });
+        if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.detail || "Scan request failed");
+        }
+        const data = await res.json();
+        showToast(data.message || `Scan started on Agent ${agentId}`, "success");
+    } catch (err) {
+        showToast(`Scan Trigger Error: ${err.message}`, "error");
+    }
+}
+

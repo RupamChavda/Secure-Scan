@@ -40,7 +40,8 @@ def ai_chat_copilot(req: AIChatRequest, current_user: dict = Depends(get_current
         reply = "Hardcoded credentials in source code pose a critical security risk if repositories are accessed or exposed. **Remediation**: Revoke the exposed keys, migrate credentials to Environment Variables or Secret Managers (e.g. AWS Secrets Manager / HashiCorp Vault)."
         actions = ["Revoke exposed API keys", "Add .env to .gitignore", "Scan repo with GitLeaks"]
     else:
-        reply = f"I am your **SecureScan AI Assistant**. I analyzed your query regarding '{req.message}'. For target security, prioritize remediating Critical/High severity findings, enforcing strict input validation, keeping dependencies updated, and reviewing generated PDF executive reports."
+        reply = f"I am your **SecureScan Assistant**. I analyzed your query regarding '{req.message}'. For target security, prioritize remediating Critical/High severity findings, enforcing strict input validation, keeping dependencies updated, and reviewing generated PDF executive reports."
+
         actions = ["Run SAST audit on project archive", "View Executive PDF Security Report", "Scan target IP for open ports"]
 
     return AIChatResponse(

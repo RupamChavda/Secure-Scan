@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SecureScan AI - Enterprise Security & Vulnerability Platform</title>
+    <title>SecureScan - Enterprise Security & Vulnerability Platform</title>
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -29,7 +30,8 @@
                         <span class="hero-icon-pulse"></span>
                     </div>
                     <div>
-                        <h1 class="hero-brand-title">SecureScan <span class="badge-ai">AI</span></h1>
+                        <h1 class="hero-brand-title">SecureScan</h1>
+
                         <p class="hero-brand-subtitle">Enterprise Vulnerability & Risk Management Engine</p>
                     </div>
                 </div>
@@ -165,7 +167,8 @@
             <div class="brand">
                 <i class="fa-solid fa-shield-halved brand-icon"></i>
                 <div class="brand-text">
-                    <span class="brand-name">SecureScan <span class="badge-ai">AI</span></span>
+                    <span class="brand-name">SecureScan</span>
+
                     <span class="brand-sub">SecOps Intelligence</span>
                 </div>
             </div>
@@ -206,6 +209,13 @@
                     <i class="fa-solid fa-file-contract"></i> Audit Reports
                     <span class="kbd-badge">Alt+7</span>
                 </button>
+
+                <div class="nav-section-title">SIEM & INTEGRATIONS</div>
+                <button class="nav-item" data-tab="wazuh">
+                    <i class="fa-solid fa-shield-virus text-cyan"></i> Wazuh SIEM & XDR
+                    <span class="kbd-badge">Alt+8</span>
+                </button>
+
             </nav>
 
             <div class="user-profile-widget">
@@ -257,14 +267,31 @@
                         </div>
                     </div>
 
-                    <!-- Projects Grid Section -->
+                    <!-- Projects Section Header with Scroll Controls & View All Button -->
                     <div class="projects-section-header">
-                        <h3><i class="fa-solid fa-folder-tree text-cyan"></i> Scanned Projects Inventory</h3>
-                        <span class="projects-count-pill" id="projects-count-badge">0 Projects</span>
+                        <div class="projects-title-wrap">
+                            <h3><i class="fa-solid fa-folder-tree text-cyan"></i> Scanned Projects Inventory</h3>
+                            <span class="projects-count-pill" id="projects-count-badge">0 Projects</span>
+                        </div>
+                        <div class="projects-header-actions">
+                            <div class="carousel-nav-btns" id="projects-carousel-nav" style="display: none;">
+                                <button class="btn-carousel-nav" id="btn-projects-prev" title="Scroll Left" onclick="scrollProjectsCarousel(-1)">
+                                    <i class="fa-solid fa-chevron-left"></i>
+                                </button>
+                                <button class="btn-carousel-nav" id="btn-projects-next" title="Scroll Right" onclick="scrollProjectsCarousel(1)">
+                                    <i class="fa-solid fa-chevron-right"></i>
+                                </button>
+                            </div>
+                            <button class="btn-outline-cyan" id="btn-view-all-projects" onclick="openAllProjectsModal()">
+                                <i class="fa-solid fa-grip"></i> View All Projects
+                            </button>
+                        </div>
                     </div>
 
-                    <div class="projects-cards-grid" id="projects-cards-grid">
-                        <!-- Interactive project cards dynamically rendered by app.js -->
+                    <div class="projects-carousel-wrapper">
+                        <div class="projects-cards-grid" id="projects-cards-grid">
+                            <!-- Interactive project cards dynamically rendered by app.js -->
+                        </div>
                     </div>
 
                     <!-- Stats Overview Grid -->
@@ -623,12 +650,14 @@
                             <h2>CVE & Vulnerability Catalog</h2>
                             <p class="subtitle">Query NVD database, CISA Known Exploited Vulnerabilities catalog, and exploit references.</p>
                         </div>
-                        <button class="btn btn-outline" onclick="toggleAddCveForm()" data-admin-only="true"><i class="fa-solid fa-shield-virus"></i> Add CVE Entry</button>
+                        <button class="btn btn-outline" onclick="toggleAddCveForm()"><i class="fa-solid fa-shield-virus"></i> Add CVE Entry</button>
+
                     </div>
 
                     <!-- Add CVE Form -->
                     <div id="add-cve-form-panel" class="glass-panel" style="display:none; padding:24px; margin-bottom:24px;">
-                        <h3 style="margin-top:0; color:#00f2fe; display:flex; align-items:center; gap:8px;"><i class="fa-solid fa-plus-circle"></i> Add Custom CVE Record</h3>
+                        <h3 style="margin-top:0; color:#0284c7; display:flex; align-items:center; gap:8px;"><i class="fa-solid fa-plus-circle"></i> Add Custom CVE Record</h3>
+
                         <form id="new-cve-form" style="display:grid; grid-template-columns: 1fr 1fr; gap:18px; margin-top:18px;">
                             <div>
                                 <label class="form-label">CVE ID</label>
@@ -690,7 +719,8 @@
                     <div class="glass-panel ai-chat-box">
                         <div class="chat-messages" id="ai-chat-messages">
                             <div class="chat-msg ai">
-                                <div class="msg-author"><i class="fa-solid fa-robot"></i> SecureScan AI Assistant</div>
+                                <div class="msg-author"><i class="fa-solid fa-robot"></i> SecureScan Assistant</div>
+
                                 <div class="msg-text">Hello! I am your AI Security Copilot. Ask me how to remediate vulnerabilities (Log4j, SQL Injection, XSS, Secret Leaks), generate secure code patches, or analyze risk scores for your assets.</div>
                             </div>
                         </div>
@@ -726,8 +756,223 @@
                         </div>
                     </div>
                 </section>
+
+                <!-- 8. Wazuh SIEM & XDR Integration View -->
+                <section class="tab-view" id="view-wazuh">
+                    <div class="page-header-flex">
+                        <div class="page-header">
+                            <h2><i class="fa-solid fa-shield-virus text-cyan"></i> Wazuh SIEM & XDR Endpoint Protection</h2>
+                            <p class="subtitle">Live security monitoring, agent telemetry, file integrity checks & SIEM alerts from your Wazuh VMware Instance.</p>
+                        </div>
+                        <div class="quick-action-pills">
+                            <button class="btn btn-secondary" onclick="loadWazuhDashboard()"><i class="fa-solid fa-arrows-rotate"></i> Sync Wazuh Telemetry</button>
+                            <button class="btn btn-primary" onclick="toggleWazuhSettings()"><i class="fa-solid fa-gear"></i> Server Connection Settings</button>
+                        </div>
+                    </div>
+
+                    <!-- Connection & Status Banner -->
+                    <div class="glass-panel" style="margin-bottom: 24px; padding: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                            <div style="display: flex; align-items: center; gap: 15px;">
+                                <div id="wazuh-status-icon-container" style="width: 48px; height: 48px; border-radius: 12px; background: rgba(16, 185, 129, 0.15); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; color: #10b981;">
+                                    <i class="fa-solid fa-server" id="wazuh-status-icon"></i>
+                                </div>
+                                <div>
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <h4 style="margin: 0; font-size: 1.1rem; font-weight: 600;" id="wazuh-status-title">Wazuh Manager Status</h4>
+                                        <span class="badge badge-success" id="wazuh-status-badge"><i class="fa-solid fa-circle text-emerald"></i> Connected</span>
+                                        <span class="badge badge-info" id="wazuh-mode-badge" style="display:none;"><i class="fa-solid fa-flask"></i> Demo Telemetry</span>
+                                    </div>
+                                    <p style="margin: 4px 0 0 0; font-size: 0.88rem; color: #94a3b8;" id="wazuh-status-sub">Target: <code id="wazuh-target-display">https://192.168.1.100:55000</code> &bull; Cluster: <span id="wazuh-cluster-display">wazuh-master</span></p>
+                                </div>
+                            </div>
+                            <div style="font-size: 0.85rem; color: #94a3b8; text-align: right;" id="wazuh-last-synced-wrap">
+                                Last Synced: <span id="wazuh-last-synced">Just now</span>
+                            </div>
+                        </div>
+
+                        <!-- Error Alert if Connection Fails -->
+                        <div id="wazuh-error-banner" class="alert alert-warning" style="display:none; margin-top: 15px; margin-bottom: 0;">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            <div>
+                                <strong>Wazuh VM Unreachable:</strong> <span id="wazuh-error-text">Cannot connect to Wazuh API.</span>
+                                <div style="font-size: 0.82rem; margin-top: 4px;">
+                                    💡 <strong>Setup Help:</strong> Make sure your Wazuh VM is turned on in VMware, find its IP using <code>ip a</code>, and update the host IP in the settings below.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Collapsible Configuration Form -->
+                        <div id="wazuh-config-card" style="display: none; margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1);">
+                            <h4 style="font-size: 0.95rem; margin-bottom: 12px; color: #00f2fe;"><i class="fa-solid fa-sliders"></i> Configure Wazuh VMware Server Credentials</h4>
+                            <form id="wazuh-settings-form" onsubmit="saveWazuhSettings(event)">
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                                    <div class="form-group">
+                                        <label class="form-label"><i class="fa-solid fa-network-wired"></i> Wazuh VM IP / Host</label>
+                                        <input type="text" id="wazuh-cfg-host" class="form-control" placeholder="e.g. 192.168.1.100" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label"><i class="fa-solid fa-plug"></i> REST API Port</label>
+                                        <input type="number" id="wazuh-cfg-port" class="form-control" value="55000" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label"><i class="fa-solid fa-user"></i> API Username</label>
+                                        <input type="text" id="wazuh-cfg-user" class="form-control" placeholder="wazuh" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label"><i class="fa-solid fa-key"></i> API Password</label>
+                                        <input type="password" id="wazuh-cfg-pass" class="form-control" placeholder="••••••••">
+                                    </div>
+                                </div>
+
+                                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-top: 15px; gap: 15px;">
+                                    <div style="display: flex; gap: 20px; align-items: center;">
+                                        <label style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; cursor: pointer;">
+                                            <input type="checkbox" id="wazuh-cfg-ssl"> Verify SSL Certificate
+                                        </label>
+                                        <label style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; cursor: pointer;" title="If VMware VM is turned off, show interactive mock telemetry instead of blank page">
+                                            <input type="checkbox" id="wazuh-cfg-mock" checked> Enable Demo Telemetry Fallback
+                                        </label>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary" id="btn-save-wazuh-cfg">
+                                        <i class="fa-solid fa-floppy-disk"></i> Save & Test Wazuh Connection
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Metrics Grid -->
+                    <div class="stats-grid" style="margin-bottom: 24px;">
+                        <div class="stat-card glass-panel border-cyan">
+                            <div class="stat-icon cyan"><i class="fa-solid fa-server"></i></div>
+                            <div class="stat-details">
+                                <span class="stat-label">Wazuh Manager Node</span>
+                                <div class="stat-value-row">
+                                    <span class="stat-value" id="wazuh-metric-version" style="font-size: 1.25rem;">v4.7.2</span>
+                                    <span class="stat-trend trend-up"><i class="fa-solid fa-check"></i> Active</span>
+                                </div>
+                                <span style="font-size: 0.78rem; color: #94a3b8;" id="wazuh-metric-node">Node: wazuh-master</span>
+                            </div>
+                        </div>
+
+                        <div class="stat-card glass-panel border-emerald">
+                            <div class="stat-icon emerald"><i class="fa-solid fa-laptop-code"></i></div>
+                            <div class="stat-details">
+                                <span class="stat-label">Monitored Endpoints</span>
+                                <div class="stat-value-row">
+                                    <span class="stat-value" id="wazuh-metric-active-agents">3 / 4</span>
+                                    <span class="stat-trend trend-up"><i class="fa-solid fa-signal"></i> Online</span>
+                                </div>
+                                <span style="font-size: 0.78rem; color: #94a3b8;" id="wazuh-metric-total-agents">Total Agents Registered: 4</span>
+                            </div>
+                        </div>
+
+                        <div class="stat-card glass-panel border-rose">
+                            <div class="stat-icon rose"><i class="fa-solid fa-bell"></i></div>
+                            <div class="stat-details">
+                                <span class="stat-label">SIEM Security Alerts</span>
+                                <div class="stat-value-row">
+                                    <span class="stat-value" id="wazuh-metric-alerts">4</span>
+                                    <span class="stat-trend trend-down"><i class="fa-solid fa-shield-cat"></i> Real-time</span>
+                                </div>
+                                <span style="font-size: 0.78rem; color: #94a3b8;">High & Critical Rule Hits</span>
+                            </div>
+                        </div>
+
+                        <div class="stat-card glass-panel border-purple">
+                            <div class="stat-icon purple"><i class="fa-solid fa-shield-halved"></i></div>
+                            <div class="stat-details">
+                                <span class="stat-label">Active Modules</span>
+                                <div class="stat-value-row">
+                                    <span class="stat-value" style="font-size: 1.1rem;">FIM + VulnDetector</span>
+                                </div>
+                                <span style="font-size: 0.78rem; color: #94a3b8;">File Integrity & Vuln Scan</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Monitored Endpoints (Agents) Section -->
+                    <div class="projects-section-header">
+                        <h3><i class="fa-solid fa-desktop text-cyan"></i> Wazuh Monitored Endpoints & Agents</h3>
+                        <span class="projects-count-pill" id="wazuh-agents-count">4 Agents</span>
+                    </div>
+
+                    <div class="table-card glass-panel" style="margin-bottom: 30px;">
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Agent ID & Name</th>
+                                        <th>Target IP Address</th>
+                                        <th>OS & Architecture</th>
+                                        <th>Wazuh Agent Ver</th>
+                                        <th>Connection Status</th>
+                                        <th>Last Keepalive</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="wazuh-agents-table-body">
+                                    <!-- Rendered dynamically via app.js -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Live SIEM Security Event & Log Stream -->
+                    <div class="projects-section-header">
+                        <h3><i class="fa-solid fa-list-check text-amber"></i> Live Wazuh SIEM Security Event Feed</h3>
+                        <div style="display: flex; gap: 10px;">
+                            <select id="wazuh-alert-severity-filter" class="form-control" style="padding: 4px 10px; font-size: 0.85rem;" onchange="filterWazuhAlerts()">
+                                <option value="all">All Alert Levels</option>
+                                <option value="critical">Critical (Level 12+)</option>
+                                <option value="high">High (Level 7+)</option>
+                                <option value="medium">Medium (Level 4-6)</option>
+                                <option value="low">Low / Info (Level 1-3)</option>
+
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel" style="padding: 20px;">
+                        <div id="wazuh-alerts-feed-container" style="display: flex; flex-direction: column; gap: 12px;">
+                            <!-- Dynamically loaded -->
+                        </div>
+                    </div>
+                </section>
             </div>
         </main>
+    </div>
+
+
+    <!-- All Scanned Projects Inventory Modal -->
+    <div id="all-projects-modal" class="modal-overlay" style="display:none;" onclick="if(event.target === this) closeAllProjectsModal()">
+        <div class="modal-container">
+            <div class="modal-header">
+                <div class="modal-title-group">
+                    <i class="fa-solid fa-folder-tree text-cyan" style="font-size:1.3rem;"></i>
+                    <div>
+                        <h3 style="margin:0; font-size:1.15rem; font-weight:700;">All Scanned Projects & Audits</h3>
+                        <span style="font-size:0.8rem; color:#64748b;">Complete inventory of all security audit target projects</span>
+                    </div>
+                    <span class="projects-count-pill" id="all-projects-modal-badge" style="margin-left:8px;">0 Projects</span>
+                </div>
+                <div class="modal-search-wrap">
+                    <div style="position:relative; width:260px;">
+                        <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#94a3b8; font-size:13px;"></i>
+                        <input type="text" id="all-projects-search-input" class="modal-search-input" placeholder="Search projects or target URL..." oninput="filterAllProjectsModal(this.value)">
+                    </div>
+                    <button type="button" class="modal-close-btn" onclick="closeAllProjectsModal()" title="Close (Esc)">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="all-projects-grid" id="all-projects-modal-grid">
+                    <!-- Loaded dynamically -->
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="app.js"></script>
